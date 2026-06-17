@@ -401,6 +401,10 @@ msgstr "Klik pada sistem untuk melihat informasi lebih banyak."
 msgid "Click to copy"
 msgstr "Klik untuk menyalin"
 
+#: src/components/processes-table/processes-table.tsx
+msgid "Command"
+msgstr ""
+
 #: src/components/login/forgot-pass-form.tsx
 #: src/components/login/forgot-pass-form.tsx
 msgid "Command line instructions"
@@ -493,6 +497,7 @@ msgid "Core"
 msgstr "Inti"
 
 #: src/components/containers-table/containers-table-columns.tsx
+#: src/components/processes-table/processes-table.tsx
 #: src/components/systemd-table/systemd-table-columns.tsx
 #: src/components/systems-table/systems-table-columns.tsx
 msgid "CPU"
@@ -717,7 +722,6 @@ msgstr "Masukkan otp anda."
 msgid "Ephemeral"
 msgstr "Sementara"
 
-#: src/components/login/auth-form.tsx
 #: src/components/routes/settings/alerts-history-data-table.tsx
 #: src/components/routes/settings/config-yaml.tsx
 #: src/components/routes/settings/heartbeat.tsx
@@ -1046,6 +1050,7 @@ msgid "Max 1 min"
 msgstr "Maks 1 mnt"
 
 #: src/components/containers-table/containers-table-columns.tsx
+#: src/components/processes-table/processes-table.tsx
 #: src/components/routes/system/info-bar.tsx
 #: src/components/systemd-table/systemd-table-columns.tsx
 #: src/components/systemd-table/systemd-table.tsx
@@ -1074,6 +1079,10 @@ msgstr "Penggunaan memori kontainer docker"
 #. Device model
 #: src/components/routes/system/smart-table.tsx
 msgid "Model"
+msgstr ""
+
+#: src/components/processes-table/processes-table.tsx
+msgid "Most CPU-intensive processes, updated live."
 msgstr ""
 
 #: src/components/add-system.tsx
@@ -1251,6 +1260,10 @@ msgstr "Permanen"
 msgid "Persistence"
 msgstr "Tetap berlaku"
 
+#: src/components/processes-table/processes-table.tsx
+msgid "PID"
+msgstr ""
+
 #: src/components/routes/settings/notifications.tsx
 msgid "Please <0>configure an SMTP server</0> to ensure alerts are delivered."
 msgstr "Silakan <0>konfigurasi server SMTP</0> untuk memastikan peringatan dikirimkan."
@@ -1310,6 +1323,10 @@ msgstr "Pilihan Bahasa"
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Process started"
 msgstr "Proses dimulai"
+
+#: src/components/routes/system.tsx
+msgid "Processes"
+msgstr ""
 
 #. Use 'Key' if your language requires many more characters
 #: src/components/add-system.tsx
@@ -1550,6 +1567,11 @@ msgstr "Ruang swap yang digunakan oleh sistem"
 msgid "Swap Usage"
 msgstr "Penggunaan Swap"
 
+#: src/components/mode-toggle.tsx
+#: src/components/mode-toggle.tsx
+msgid "Switch theme"
+msgstr ""
+
 #: src/components/add-system.tsx
 #: src/components/alerts-history-columns.tsx
 #: src/components/containers-table/containers-table-columns.tsx
@@ -1659,8 +1681,8 @@ msgstr "Ke email"
 
 #: src/components/mode-toggle.tsx
 #: src/components/mode-toggle.tsx
-msgid "Toggle theme"
-msgstr "Ganti tema"
+#~ msgid "Toggle theme"
+#~ msgstr "Ganti tema"
 
 #: src/components/add-system.tsx
 #: src/components/routes/settings/tokens-fingerprints.tsx
@@ -1680,6 +1702,10 @@ msgstr "Token memungkinkan agen untuk terhubung dan mendaftar. Fingerprint adala
 #: src/components/routes/settings/tokens-fingerprints.tsx
 msgid "Tokens and fingerprints are used to authenticate WebSocket connections to the hub."
 msgstr "Token dan Fingerprint digunakan untuk mengautentikasi koneksi WebSocket ke hub."
+
+#: src/components/processes-table/processes-table.tsx
+msgid "Top Processes"
+msgstr ""
 
 #: src/components/ui/chart.tsx
 #: src/components/ui/chart.tsx
@@ -1835,6 +1861,10 @@ msgstr "Penggunaan partisi root"
 #: src/components/routes/system/charts/memory-charts.tsx
 msgid "Used"
 msgstr "Digunakan"
+
+#: src/components/processes-table/processes-table.tsx
+msgid "User"
+msgstr ""
 
 #: src/components/command-palette.tsx
 #: src/components/navbar.tsx

@@ -401,6 +401,10 @@ msgstr "Klicka på ett system för att visa mer information."
 msgid "Click to copy"
 msgstr "Klicka för att kopiera"
 
+#: src/components/processes-table/processes-table.tsx
+msgid "Command"
+msgstr ""
+
 #: src/components/login/forgot-pass-form.tsx
 #: src/components/login/forgot-pass-form.tsx
 msgid "Command line instructions"
@@ -493,6 +497,7 @@ msgid "Core"
 msgstr "Kärna"
 
 #: src/components/containers-table/containers-table-columns.tsx
+#: src/components/processes-table/processes-table.tsx
 #: src/components/systemd-table/systemd-table-columns.tsx
 #: src/components/systems-table/systems-table-columns.tsx
 msgid "CPU"
@@ -717,7 +722,6 @@ msgstr "Ange ditt engångslösenord."
 msgid "Ephemeral"
 msgstr "Flyktig"
 
-#: src/components/login/auth-form.tsx
 #: src/components/routes/settings/alerts-history-data-table.tsx
 #: src/components/routes/settings/config-yaml.tsx
 #: src/components/routes/settings/heartbeat.tsx
@@ -1046,6 +1050,7 @@ msgid "Max 1 min"
 msgstr ""
 
 #: src/components/containers-table/containers-table-columns.tsx
+#: src/components/processes-table/processes-table.tsx
 #: src/components/routes/system/info-bar.tsx
 #: src/components/systemd-table/systemd-table-columns.tsx
 #: src/components/systemd-table/systemd-table.tsx
@@ -1075,6 +1080,10 @@ msgstr "Minnesanvändning för dockercontainrar"
 #: src/components/routes/system/smart-table.tsx
 msgid "Model"
 msgstr "Modell"
+
+#: src/components/processes-table/processes-table.tsx
+msgid "Most CPU-intensive processes, updated live."
+msgstr ""
 
 #: src/components/add-system.tsx
 #: src/components/alerts-history-columns.tsx
@@ -1251,6 +1260,10 @@ msgstr ""
 msgid "Persistence"
 msgstr "Beständighet"
 
+#: src/components/processes-table/processes-table.tsx
+msgid "PID"
+msgstr ""
+
 #: src/components/routes/settings/notifications.tsx
 msgid "Please <0>configure an SMTP server</0> to ensure alerts are delivered."
 msgstr "Vänligen <0>konfigurera en SMTP-server</0> för att säkerställa att larm levereras."
@@ -1310,6 +1323,10 @@ msgstr "Föredraget språk"
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Process started"
 msgstr "Process startad"
+
+#: src/components/routes/system.tsx
+msgid "Processes"
+msgstr ""
 
 #. Use 'Key' if your language requires many more characters
 #: src/components/add-system.tsx
@@ -1550,6 +1567,11 @@ msgstr "Swap-utrymme som används av systemet"
 msgid "Swap Usage"
 msgstr "Swap-användning"
 
+#: src/components/mode-toggle.tsx
+#: src/components/mode-toggle.tsx
+msgid "Switch theme"
+msgstr ""
+
 #: src/components/add-system.tsx
 #: src/components/alerts-history-columns.tsx
 #: src/components/containers-table/containers-table-columns.tsx
@@ -1659,8 +1681,8 @@ msgstr "Till e-postadress(er)"
 
 #: src/components/mode-toggle.tsx
 #: src/components/mode-toggle.tsx
-msgid "Toggle theme"
-msgstr "Växla tema"
+#~ msgid "Toggle theme"
+#~ msgstr "Växla tema"
 
 #: src/components/add-system.tsx
 #: src/components/routes/settings/tokens-fingerprints.tsx
@@ -1680,6 +1702,10 @@ msgstr "Tokens tillåter agenter att ansluta och registrera. Fingeravtryck är s
 #: src/components/routes/settings/tokens-fingerprints.tsx
 msgid "Tokens and fingerprints are used to authenticate WebSocket connections to the hub."
 msgstr "Tokens och fingeravtryck används för att autentisera WebSocket-anslutningar till hubben."
+
+#: src/components/processes-table/processes-table.tsx
+msgid "Top Processes"
+msgstr ""
 
 #: src/components/ui/chart.tsx
 #: src/components/ui/chart.tsx
@@ -1835,6 +1861,10 @@ msgstr "Användning av rotpartitionen"
 #: src/components/routes/system/charts/memory-charts.tsx
 msgid "Used"
 msgstr "Använt"
+
+#: src/components/processes-table/processes-table.tsx
+msgid "User"
+msgstr ""
 
 #: src/components/command-palette.tsx
 #: src/components/navbar.tsx

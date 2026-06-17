@@ -401,6 +401,10 @@ msgstr "Odaberite sustav za prikaz više informacija."
 msgid "Click to copy"
 msgstr "Pritisnite za kopiranje"
 
+#: src/components/processes-table/processes-table.tsx
+msgid "Command"
+msgstr ""
+
 #: src/components/login/forgot-pass-form.tsx
 #: src/components/login/forgot-pass-form.tsx
 msgid "Command line instructions"
@@ -493,6 +497,7 @@ msgid "Core"
 msgstr "Jezgra"
 
 #: src/components/containers-table/containers-table-columns.tsx
+#: src/components/processes-table/processes-table.tsx
 #: src/components/systemd-table/systemd-table-columns.tsx
 #: src/components/systems-table/systems-table-columns.tsx
 msgid "CPU"
@@ -717,7 +722,6 @@ msgstr "Unesite jednokratnu lozinku."
 msgid "Ephemeral"
 msgstr "Efemeran"
 
-#: src/components/login/auth-form.tsx
 #: src/components/routes/settings/alerts-history-data-table.tsx
 #: src/components/routes/settings/config-yaml.tsx
 #: src/components/routes/settings/heartbeat.tsx
@@ -1046,6 +1050,7 @@ msgid "Max 1 min"
 msgstr "Maksimalno 1 minuta"
 
 #: src/components/containers-table/containers-table-columns.tsx
+#: src/components/processes-table/processes-table.tsx
 #: src/components/routes/system/info-bar.tsx
 #: src/components/systemd-table/systemd-table-columns.tsx
 #: src/components/systemd-table/systemd-table.tsx
@@ -1074,6 +1079,10 @@ msgstr "Iskorištenost memorije Docker spremnika"
 #. Device model
 #: src/components/routes/system/smart-table.tsx
 msgid "Model"
+msgstr ""
+
+#: src/components/processes-table/processes-table.tsx
+msgid "Most CPU-intensive processes, updated live."
 msgstr ""
 
 #: src/components/add-system.tsx
@@ -1251,6 +1260,10 @@ msgstr "Trajan"
 msgid "Persistence"
 msgstr "Postojanost"
 
+#: src/components/processes-table/processes-table.tsx
+msgid "PID"
+msgstr ""
+
 #: src/components/routes/settings/notifications.tsx
 msgid "Please <0>configure an SMTP server</0> to ensure alerts are delivered."
 msgstr "Molimo <0>konfigurirajte SMTP server</0> kako biste osigurali isporuku upozorenja."
@@ -1310,6 +1323,10 @@ msgstr "Preferirani jezik"
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Process started"
 msgstr "Proces pokrenut"
+
+#: src/components/routes/system.tsx
+msgid "Processes"
+msgstr ""
 
 #. Use 'Key' if your language requires many more characters
 #: src/components/add-system.tsx
@@ -1550,6 +1567,11 @@ msgstr "Swap prostor kojeg je zauzeo sustav"
 msgid "Swap Usage"
 msgstr "Swap Iskorištenost"
 
+#: src/components/mode-toggle.tsx
+#: src/components/mode-toggle.tsx
+msgid "Switch theme"
+msgstr ""
+
 #: src/components/add-system.tsx
 #: src/components/alerts-history-columns.tsx
 #: src/components/containers-table/containers-table-columns.tsx
@@ -1659,8 +1681,8 @@ msgstr "Primaoci emaila"
 
 #: src/components/mode-toggle.tsx
 #: src/components/mode-toggle.tsx
-msgid "Toggle theme"
-msgstr "Uključi/isključi temu"
+#~ msgid "Toggle theme"
+#~ msgstr "Uključi/isključi temu"
 
 #: src/components/add-system.tsx
 #: src/components/routes/settings/tokens-fingerprints.tsx
@@ -1680,6 +1702,10 @@ msgstr "Tokeni dopuštaju agentima prijavu i registraciju. Otisci su stabilni id
 #: src/components/routes/settings/tokens-fingerprints.tsx
 msgid "Tokens and fingerprints are used to authenticate WebSocket connections to the hub."
 msgstr "Tokeni se uz otiske koriste za autentifikaciju WebSocket veza prema središnjoj kontroli."
+
+#: src/components/processes-table/processes-table.tsx
+msgid "Top Processes"
+msgstr ""
 
 #: src/components/ui/chart.tsx
 #: src/components/ui/chart.tsx
@@ -1835,6 +1861,10 @@ msgstr "Iskorištenost root datotečnog sustava"
 #: src/components/routes/system/charts/memory-charts.tsx
 msgid "Used"
 msgstr "Iskorišteno"
+
+#: src/components/processes-table/processes-table.tsx
+msgid "User"
+msgstr ""
 
 #: src/components/command-palette.tsx
 #: src/components/navbar.tsx

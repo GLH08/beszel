@@ -401,6 +401,10 @@ msgstr "Nhấp vào hệ thống để xem thêm thông tin."
 msgid "Click to copy"
 msgstr "Nhấp để sao chép"
 
+#: src/components/processes-table/processes-table.tsx
+msgid "Command"
+msgstr ""
+
 #: src/components/login/forgot-pass-form.tsx
 #: src/components/login/forgot-pass-form.tsx
 msgid "Command line instructions"
@@ -493,6 +497,7 @@ msgid "Core"
 msgstr "Lõi"
 
 #: src/components/containers-table/containers-table-columns.tsx
+#: src/components/processes-table/processes-table.tsx
 #: src/components/systemd-table/systemd-table-columns.tsx
 #: src/components/systems-table/systems-table-columns.tsx
 msgid "CPU"
@@ -717,7 +722,6 @@ msgstr "Nhập mật khẩu một lần của bạn."
 msgid "Ephemeral"
 msgstr "Tạm thời"
 
-#: src/components/login/auth-form.tsx
 #: src/components/routes/settings/alerts-history-data-table.tsx
 #: src/components/routes/settings/config-yaml.tsx
 #: src/components/routes/settings/heartbeat.tsx
@@ -1046,6 +1050,7 @@ msgid "Max 1 min"
 msgstr "Tối đa 1 phút"
 
 #: src/components/containers-table/containers-table-columns.tsx
+#: src/components/processes-table/processes-table.tsx
 #: src/components/routes/system/info-bar.tsx
 #: src/components/systemd-table/systemd-table-columns.tsx
 #: src/components/systemd-table/systemd-table.tsx
@@ -1075,6 +1080,10 @@ msgstr "Sử dụng bộ nhớ của các container Docker"
 #: src/components/routes/system/smart-table.tsx
 msgid "Model"
 msgstr "Mô hình"
+
+#: src/components/processes-table/processes-table.tsx
+msgid "Most CPU-intensive processes, updated live."
+msgstr ""
 
 #: src/components/add-system.tsx
 #: src/components/alerts-history-columns.tsx
@@ -1251,6 +1260,10 @@ msgstr "Vĩnh viễn"
 msgid "Persistence"
 msgstr "Tính bền vững"
 
+#: src/components/processes-table/processes-table.tsx
+msgid "PID"
+msgstr ""
+
 #: src/components/routes/settings/notifications.tsx
 msgid "Please <0>configure an SMTP server</0> to ensure alerts are delivered."
 msgstr "Vui lòng <0>cấu hình máy chủ SMTP</0> để đảm bảo cảnh báo được gửi đi."
@@ -1310,6 +1323,10 @@ msgstr "Ngôn ngữ Ưa thích"
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Process started"
 msgstr "Tiến trình đã khởi động"
+
+#: src/components/routes/system.tsx
+msgid "Processes"
+msgstr ""
 
 #. Use 'Key' if your language requires many more characters
 #: src/components/add-system.tsx
@@ -1550,6 +1567,11 @@ msgstr "Không gian hoán đổi được sử dụng bởi hệ thống"
 msgid "Swap Usage"
 msgstr "Sử dụng Hoán đổi"
 
+#: src/components/mode-toggle.tsx
+#: src/components/mode-toggle.tsx
+msgid "Switch theme"
+msgstr ""
+
 #: src/components/add-system.tsx
 #: src/components/alerts-history-columns.tsx
 #: src/components/containers-table/containers-table-columns.tsx
@@ -1659,8 +1681,8 @@ msgstr "Đến email(s)"
 
 #: src/components/mode-toggle.tsx
 #: src/components/mode-toggle.tsx
-msgid "Toggle theme"
-msgstr "Chuyển đổi chủ đề"
+#~ msgid "Toggle theme"
+#~ msgstr "Chuyển đổi chủ đề"
 
 #: src/components/add-system.tsx
 #: src/components/routes/settings/tokens-fingerprints.tsx
@@ -1680,6 +1702,10 @@ msgstr "Token cho phép các tác nhân kết nối và đăng ký. Vân tay là
 #: src/components/routes/settings/tokens-fingerprints.tsx
 msgid "Tokens and fingerprints are used to authenticate WebSocket connections to the hub."
 msgstr "Token và vân tay được sử dụng để xác thực các kết nối WebSocket đến trung tâm."
+
+#: src/components/processes-table/processes-table.tsx
+msgid "Top Processes"
+msgstr ""
 
 #: src/components/ui/chart.tsx
 #: src/components/ui/chart.tsx
@@ -1835,6 +1861,10 @@ msgstr "Sử dụng phân vùng gốc"
 #: src/components/routes/system/charts/memory-charts.tsx
 msgid "Used"
 msgstr "Đã sử dụng"
+
+#: src/components/processes-table/processes-table.tsx
+msgid "User"
+msgstr ""
 
 #: src/components/command-palette.tsx
 #: src/components/navbar.tsx

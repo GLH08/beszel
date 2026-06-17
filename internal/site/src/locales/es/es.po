@@ -401,6 +401,10 @@ msgstr "Haz clic en un sistema para ver más información."
 msgid "Click to copy"
 msgstr "Haz clic para copiar"
 
+#: src/components/processes-table/processes-table.tsx
+msgid "Command"
+msgstr ""
+
 #: src/components/login/forgot-pass-form.tsx
 #: src/components/login/forgot-pass-form.tsx
 msgid "Command line instructions"
@@ -493,6 +497,7 @@ msgid "Core"
 msgstr "Núcleo"
 
 #: src/components/containers-table/containers-table-columns.tsx
+#: src/components/processes-table/processes-table.tsx
 #: src/components/systemd-table/systemd-table-columns.tsx
 #: src/components/systems-table/systems-table-columns.tsx
 msgid "CPU"
@@ -717,7 +722,6 @@ msgstr "Ingrese su contraseña de un solo uso."
 msgid "Ephemeral"
 msgstr "Efímero"
 
-#: src/components/login/auth-form.tsx
 #: src/components/routes/settings/alerts-history-data-table.tsx
 #: src/components/routes/settings/config-yaml.tsx
 #: src/components/routes/settings/heartbeat.tsx
@@ -1046,6 +1050,7 @@ msgid "Max 1 min"
 msgstr "Máx. 1 min"
 
 #: src/components/containers-table/containers-table-columns.tsx
+#: src/components/processes-table/processes-table.tsx
 #: src/components/routes/system/info-bar.tsx
 #: src/components/systemd-table/systemd-table-columns.tsx
 #: src/components/systemd-table/systemd-table.tsx
@@ -1075,6 +1080,10 @@ msgstr "Uso de memoria de los contenedores Docker"
 #: src/components/routes/system/smart-table.tsx
 msgid "Model"
 msgstr "Modelo"
+
+#: src/components/processes-table/processes-table.tsx
+msgid "Most CPU-intensive processes, updated live."
+msgstr ""
 
 #: src/components/add-system.tsx
 #: src/components/alerts-history-columns.tsx
@@ -1251,6 +1260,10 @@ msgstr "Permanente"
 msgid "Persistence"
 msgstr "Persistencia"
 
+#: src/components/processes-table/processes-table.tsx
+msgid "PID"
+msgstr ""
+
 #: src/components/routes/settings/notifications.tsx
 msgid "Please <0>configure an SMTP server</0> to ensure alerts are delivered."
 msgstr "Por favor, <0>configura un servidor SMTP</0> para asegurar que las alertas sean entregadas."
@@ -1310,6 +1323,10 @@ msgstr "Idioma preferido"
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Process started"
 msgstr "Proceso iniciado"
+
+#: src/components/routes/system.tsx
+msgid "Processes"
+msgstr ""
 
 #. Use 'Key' if your language requires many more characters
 #: src/components/add-system.tsx
@@ -1550,6 +1567,11 @@ msgstr "Espacio de swap utilizado por el sistema"
 msgid "Swap Usage"
 msgstr "Uso de swap"
 
+#: src/components/mode-toggle.tsx
+#: src/components/mode-toggle.tsx
+msgid "Switch theme"
+msgstr ""
+
 #: src/components/add-system.tsx
 #: src/components/alerts-history-columns.tsx
 #: src/components/containers-table/containers-table-columns.tsx
@@ -1659,8 +1681,8 @@ msgstr "A correo(s)"
 
 #: src/components/mode-toggle.tsx
 #: src/components/mode-toggle.tsx
-msgid "Toggle theme"
-msgstr "Alternar tema"
+#~ msgid "Toggle theme"
+#~ msgstr "Alternar tema"
 
 #: src/components/add-system.tsx
 #: src/components/routes/settings/tokens-fingerprints.tsx
@@ -1680,6 +1702,10 @@ msgstr "Los tokens permiten que los agentes se conecten y registren. Las huellas
 #: src/components/routes/settings/tokens-fingerprints.tsx
 msgid "Tokens and fingerprints are used to authenticate WebSocket connections to the hub."
 msgstr "Los tokens y las huellas digitales se utilizan para autenticar las conexiones WebSocket al hub."
+
+#: src/components/processes-table/processes-table.tsx
+msgid "Top Processes"
+msgstr ""
 
 #: src/components/ui/chart.tsx
 #: src/components/ui/chart.tsx
@@ -1835,6 +1861,10 @@ msgstr "Uso de la partición raíz"
 #: src/components/routes/system/charts/memory-charts.tsx
 msgid "Used"
 msgstr "Usado"
+
+#: src/components/processes-table/processes-table.tsx
+msgid "User"
+msgstr ""
 
 #: src/components/command-palette.tsx
 #: src/components/navbar.tsx
