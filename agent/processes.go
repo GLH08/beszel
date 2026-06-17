@@ -45,6 +45,10 @@ func newProcessSampler() *processSampler {
 
 // gatherTopProcesses returns up to topProcessCount processes sorted by CPU%.
 // On the first call it seeds the baseline and returns nil (no delta yet).
+//
+// To keep per-cycle I/O bounded on hosts with many processes, it first reads
+// only CPU times for every pid (one /proc read each), computes the deltas,
+// and only then reads memory/user/cmdline for the few top candidates.
 func (ps *processSampler) gatherTopProcesses() []*system.Process {
 	procs, err := process.Processes()
 	if err != nil {
@@ -58,11 +62,12 @@ func (ps *processSampler) gatherTopProcesses() []*system.Process {
 		elapsed = now.Sub(ps.lastAt)
 	}
 
-	type entry struct {
-		p   *system.Process
+	// cpuPct for every pid whose delta we can compute this round
+	type delta struct {
+		pid int32
 		cpu float64
 	}
-	entries := make([]entry, 0, len(procs))
+	deltas := make([]delta, 0, len(procs))
 	nextLast := make(map[int32]procSample, len(procs))
 
 	for _, p := range procs {
@@ -84,33 +89,12 @@ func (ps *processSampler) gatherTopProcesses() []*system.Process {
 			// process was replaced / counters reset; skip this round
 			continue
 		}
-		delta := curTime - prev.cpuTime
-		cpuPct := (delta / elapsed.Seconds()) * 100 / float64(ps.cores)
+		d := curTime - prev.cpuTime
+		cpuPct := (d / elapsed.Seconds()) * 100 / float64(ps.cores)
 		if cpuPct < 0 {
 			cpuPct = 0
 		}
-
-		memPct, err := p.MemoryPercent()
-		if err != nil {
-			memPct = 0
-		}
-
-		user, _ := p.Username()
-		cmd, _ := p.Cmdline()
-		if len(cmd) > cmdDisplayLimit {
-			cmd = cmd[:cmdDisplayLimit]
-		}
-
-		entries = append(entries, entry{
-			p: &system.Process{
-				Pid:  pid,
-				User: user,
-				Cmd:  cmd,
-				Cpu:  cpuPct,
-				Mem:  float64(memPct),
-			},
-			cpu: cpuPct,
-		})
+		deltas = append(deltas, delta{pid: pid, cpu: cpuPct})
 	}
 
 	// advance baseline regardless of whether we could compute deltas
@@ -122,17 +106,42 @@ func (ps *processSampler) gatherTopProcesses() []*system.Process {
 		return nil
 	}
 
-	sort.Slice(entries, func(i, j int) bool {
-		return entries[i].cpu > entries[j].cpu
+	// pick the top N by CPU% before doing the expensive per-process reads
+	sort.Slice(deltas, func(i, j int) bool {
+		return deltas[i].cpu > deltas[j].cpu
 	})
-
-	if len(entries) > topProcessCount {
-		entries = entries[:topProcessCount]
+	if len(deltas) > topProcessCount {
+		deltas = deltas[:topProcessCount]
 	}
 
-	out := make([]*system.Process, 0, len(entries))
-	for _, e := range entries {
-		out = append(out, e.p)
+	out := make([]*system.Process, 0, len(deltas))
+	for _, d := range deltas {
+		p, err := process.NewProcess(d.pid)
+		if err != nil {
+			continue
+		}
+		memPct, err := p.MemoryPercent()
+		if err != nil {
+			memPct = 0
+		}
+		user, _ := p.Username()
+		cmd, _ := p.Cmdline()
+		if len(cmd) > cmdDisplayLimit {
+			cmd = cmd[:cmdDisplayLimit]
+		}
+		out = append(out, &system.Process{
+			Pid:  d.pid,
+			User: user,
+			Cmd:  cmd,
+			Cpu:  d.cpu,
+			Mem:  float64(memPct),
+		})
+	}
+
+	// Diagnostic: log when the snapshot is unexpectedly empty despite having a
+	// baseline, so container/PID-namespace issues are visible without debug.
+	if len(out) == 0 && len(procs) > 0 {
+		slog.Info("top processes empty", "procs", len(procs), "deltas", len(deltas), "elapsed_ms", elapsed.Milliseconds())
 	}
 	return out
 }
