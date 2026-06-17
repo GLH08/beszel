@@ -13,6 +13,7 @@ interface TrafficSummary {
 	bytes_down: number
 	quota_gib: number // 0 = unlimited
 	reset_day: number
+	has_history: boolean // any prior cycle accumulated bytes
 }
 
 /** Formats a billing-cycle period start date as "Jun 15 – Jul 14". */
@@ -88,7 +89,7 @@ export function TrafficCard({ systemId }: { systemId: string }) {
 
 	// hide until we have data, and hide unlimited quotas with no usage yet
 	if (!summary) return null
-	if (unlimited && used === 0) return null
+	if (unlimited && used === 0 && !summary.has_history) return null
 
 	const quotaBytes = quotaGiB * 1024 * 1024 * 1024
 	const pct = unlimited ? 0 : Math.min(100, (used / quotaBytes) * 100)

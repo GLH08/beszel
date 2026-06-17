@@ -15,11 +15,12 @@ const bytesPerGiB = 1024 * 1024 * 1024
 // TrafficSummary is the per-system current billing-cycle traffic snapshot
 // returned by the /api/beszel/traffic endpoint.
 type TrafficSummary struct {
-	Period    string `json:"period"`     // billing-cycle start date, "2006-01-02"
-	BytesUp   uint64 `json:"bytes_up"`   // cumulative upload bytes this period
-	BytesDown uint64 `json:"bytes_down"` // cumulative download bytes this period
-	QuotaGiB  int    `json:"quota_gib"`  // 0 = unlimited
-	ResetDay  int    `json:"reset_day"`  // 1-28 (1 = natural month)
+	Period     string `json:"period"`      // billing-cycle start date, "2006-01-02"
+	BytesUp    uint64 `json:"bytes_up"`    // cumulative upload bytes this period
+	BytesDown  uint64 `json:"bytes_down"`  // cumulative download bytes this period
+	QuotaGiB   int    `json:"quota_gib"`   // 0 = unlimited
+	ResetDay   int    `json:"reset_day"`   // 1-28 (1 = natural month)
+	HasHistory bool   `json:"has_history"` // any prior cycle accumulated bytes (keep card visible across resets)
 }
 
 // trafficPeriod returns the billing-cycle period key (start date "2006-01-02")
@@ -165,6 +166,14 @@ func (sys *System) TrafficSummary() (*TrafficSummary, error) {
 		dbx.Params{"system": sys.Id, "period": period}); err == nil {
 		s.BytesUp = uint64(trec.GetInt("bytes_up"))
 		s.BytesDown = uint64(trec.GetInt("bytes_down"))
+	}
+	// Keep the card visible across cycle resets for systems that have ever
+	// transferred traffic: a freshly-rolled period has 0 bytes, which would
+	// otherwise hide the card on unlimited-quota systems.
+	if hrec, err := hub.FindFirstRecordByFilter("traffic_monthly",
+		"system = {:system} && (bytes_up > 0 || bytes_down > 0)",
+		dbx.Params{"system": sys.Id}); err == nil && hrec != nil {
+		s.HasHistory = true
 	}
 	return s, nil
 }
