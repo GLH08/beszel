@@ -979,7 +979,7 @@ msgstr "無效的電子郵件地址。"
 msgid "Language"
 msgstr "語言"
 
-#: src/components/latency-table/latency-table.tsx
+#: src/components/routes/system/charts/latency-chart.tsx
 msgid "Latency"
 msgstr ""
 
@@ -1052,6 +1052,10 @@ msgstr "系統記錄"
 #: src/components/routes/settings/notifications.tsx
 msgid "Looking instead for where to create alerts? Click the bell <0/> icons in the systems table."
 msgstr "在尋找從哪裡建立警報嗎？點擊系統列表中的小鈴鐺<0/>。"
+
+#: src/components/routes/system/charts/latency-chart.tsx
+msgid "loss"
+msgstr ""
 
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Main PID"
@@ -1294,6 +1298,10 @@ msgstr "持久性"
 
 #: src/components/processes-table/processes-table.tsx
 msgid "PID"
+msgstr ""
+
+#: src/components/routes/system/charts/latency-chart.tsx
+msgid "Ping latency to configured targets"
 msgstr ""
 
 #: src/components/routes/settings/layout.tsx
@@ -1614,7 +1622,6 @@ msgstr ""
 #: src/components/add-system.tsx
 #: src/components/alerts-history-columns.tsx
 #: src/components/containers-table/containers-table-columns.tsx
-#: src/components/latency-table/latency-table.tsx
 #: src/components/navbar.tsx
 #: src/components/routes/settings/quiet-hours.tsx
 #: src/components/routes/settings/quiet-hours.tsx

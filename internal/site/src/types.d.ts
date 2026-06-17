@@ -153,6 +153,8 @@ export interface SystemStats {
 	bat?: [number, BatteryState]
 	/** network interfaces [upload bytes, download bytes, total upload bytes, total download bytes] */
 	ni?: Record<string, [number, number, number, number]>
+	/** ping (latency) results per target id */
+	p?: Record<string, PingResult>
 }
 
 export interface GPUData {

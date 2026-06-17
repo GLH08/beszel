@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/henrygd/beszel/internal/common"
-	"github.com/henrygd/beszel/internal/entities/system"
 	"github.com/pocketbase/pocketbase/core"
 )
 
@@ -55,31 +54,4 @@ func (sm *SystemManager) pushConfigToSystem(sys *System, cfg common.MonitorConfi
 	if err := sys.request(ctx, common.SetConfig, cfg, &ack); err != nil {
 		sm.hub.Logger().Debug("push monitor config failed", "system", sys.Id, "err", err)
 	}
-}
-
-// PingSummary is one system's latest ping results, returned by /api/beszel/ping.
-type PingSummary struct {
-	System  string                       `json:"system"`
-	Status  string                       `json:"status"`
-	Results map[string]system.PingResult `json:"results,omitempty"`
-}
-
-// PingSummaries returns the latest ping results for every system, keyed by
-// target id. Used by the home page latency table.
-func (sm *SystemManager) PingSummaries() []PingSummary {
-	out := make([]PingSummary, 0, sm.systems.Length())
-	for _, sys := range sm.systems.Values() {
-		summary := PingSummary{System: sys.Id, Status: sys.Status}
-		if sys.data != nil && len(sys.data.PingResults) > 0 {
-			results := make(map[string]system.PingResult, len(sys.data.PingResults))
-			for _, r := range sys.data.PingResults {
-				if r != nil {
-					results[r.Id] = *r
-				}
-			}
-			summary.Results = results
-		}
-		out = append(out, summary)
-	}
-	return out
 }

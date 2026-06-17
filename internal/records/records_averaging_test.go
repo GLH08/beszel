@@ -818,3 +818,39 @@ func TestAverageContainerStatsSlice_ManyContainers(t *testing.T) {
 	assert.Equal(t, 35.0, result[2].Cpu)
 	assert.Equal(t, 45.0, result[3].Cpu)
 }
+
+// Pings are averaged per target id; a target missing from some records is
+// averaged only over the records in which it appears (matches GPUData /
+// Temperatures behavior).
+func TestAverageSystemStatsSlice_Pings(t *testing.T) {
+	input := []system.Stats{
+		{Pings: map[string]*system.PingResult{
+			"a": {Id: "a", Latency: 10, Loss: 0, Avg: 10},
+			"b": {Id: "b", Latency: 40, Loss: 0, Avg: 40},
+		}},
+		{Pings: map[string]*system.PingResult{
+			"a": {Id: "a", Latency: 30, Loss: 50, Avg: 20},
+			// "b" missing from this record
+		}},
+	}
+
+	result := records.AverageSystemStatsSlice(input)
+
+	require.Len(t, result.Pings, 2)
+	// "a" appears in both records: (10+30)/2, (0+50)/2, (10+20)/2
+	assert.Equal(t, 20.0, result.Pings["a"].Latency)
+	assert.Equal(t, 25.0, result.Pings["a"].Loss)
+	assert.Equal(t, 15.0, result.Pings["a"].Avg)
+	// "b" appears in one record only: averaged over that single record
+	assert.Equal(t, 40.0, result.Pings["b"].Latency)
+	assert.Equal(t, 0.0, result.Pings["b"].Loss)
+	assert.Equal(t, 40.0, result.Pings["b"].Avg)
+}
+
+// A nil/empty Pings map must not break averaging.
+func TestAverageSystemStatsSlice_PingsAbsent(t *testing.T) {
+	result := records.AverageSystemStatsSlice([]system.Stats{
+		{Cpu: 10}, {Cpu: 20},
+	})
+	assert.Nil(t, result.Pings)
+}

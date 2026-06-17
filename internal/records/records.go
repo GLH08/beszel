@@ -188,6 +188,8 @@ func AverageSystemStatsSlice(records []system.Stats) system.Stats {
 	// accumulate cpu breakdown [user, system, iowait, steal, idle]
 	var cpuBreakdownSums []float64
 	tempCount := float64(0)
+	// per-target ping record count (only records where the target appeared)
+	pingsCount := make(map[string]float64)
 
 	// Accumulate totals
 	for i := range records {
@@ -335,6 +337,31 @@ func AverageSystemStatsSlice(records []system.Stats) system.Stats {
 				sum.GPUData[id] = gpu
 			}
 		}
+
+		// Accumulate ping (latency) results per target id.
+		// A target missing from a record is skipped, so its average is taken
+		// only over the records in which it appears (like GPUData/Temperatures).
+		if stats.Pings != nil {
+			if sum.Pings == nil {
+				sum.Pings = make(map[string]*system.PingResult, len(stats.Pings))
+			}
+			for id, value := range stats.Pings {
+				if value == nil {
+					continue
+				}
+				p, ok := sum.Pings[id]
+				if !ok {
+					p = &system.PingResult{Id: value.Id}
+					sum.Pings[id] = p
+				}
+				// Latency/Loss/Avg accumulate running sums; divided by
+				// pingsCount[id] below (per-target record count).
+				p.Latency += value.Latency
+				p.Loss += value.Loss
+				p.Avg += value.Avg
+				pingsCount[id]++
+			}
+		}
 	}
 
 	// Compute averages
@@ -418,6 +445,19 @@ func AverageSystemStatsSlice(records []system.Stats) system.Stats {
 			}
 
 			sum.GPUData[id] = gpu
+		}
+	}
+
+	// Average ping (latency) results per target id.
+	if sum.Pings != nil {
+		for id, p := range sum.Pings {
+			c := pingsCount[id]
+			if c > 0 {
+				p.Latency = twoDecimals(p.Latency / c)
+				p.Loss = twoDecimals(p.Loss / c)
+				p.Avg = twoDecimals(p.Avg / c)
+			}
+			sum.Pings[id] = p
 		}
 	}
 

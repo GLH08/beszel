@@ -129,8 +129,6 @@ func (h *Hub) registerApiRoutes(se *core.ServeEvent) error {
 	apiAuth.GET("/systemd/info", h.getSystemdInfo)
 	// get monthly traffic summary for a system
 	apiAuth.GET("/traffic", h.getTraffic)
-	// get latest ping results for all systems
-	apiAuth.GET("/ping", h.getPing)
 	// /containers routes
 	if enabled, _ := utils.GetEnv("CONTAINER_DETAILS"); enabled != "false" {
 		// get container logs
@@ -361,13 +359,6 @@ func (h *Hub) getTraffic(e *core.RequestEvent) error {
 	}
 	e.Response.Header().Set("Cache-Control", "public, max-age=30")
 	return e.JSON(http.StatusOK, summary)
-}
-
-// getPing handles GET /api/beszel/ping — returns latest ping results for all systems
-func (h *Hub) getPing(e *core.RequestEvent) error {
-	summaries := h.sm.PingSummaries()
-	e.Response.Header().Set("Cache-Control", "public, max-age=10")
-	return e.JSON(http.StatusOK, summaries)
 }
 
 // getSystemdInfo handles GET /api/beszel/systemd/info requests

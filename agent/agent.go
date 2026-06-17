@@ -174,8 +174,10 @@ func (a *Agent) gatherStats(options common.DataRequestOptions) *system.CombinedD
 		if cacheTimeMs <= 1000 {
 			data.TopProcesses = a.processSampler.gatherTopProcesses()
 		}
-		// ping results are an async snapshot (cheap), so always attach them.
-		data.PingResults = a.pingManager.sortedResults()
+		// ping results are an async snapshot (cheap), so always attach them —
+		// both the realtime payload (PingResults) and the persisted field
+		// (Stats.Pings) so latency is stored in history and charted.
+		a.attachPingResults(data)
 		return data
 	}
 
@@ -233,10 +235,24 @@ func (a *Agent) gatherStats(options common.DataRequestOptions) *system.CombinedD
 	if cacheTimeMs <= 1000 {
 		data.TopProcesses = a.processSampler.gatherTopProcesses()
 	}
-	// ping results are an async snapshot (cheap), so always attach them.
-	data.PingResults = a.pingManager.sortedResults()
+	// ping results are an async snapshot (cheap), so always attach them —
+	// both the realtime payload (PingResults) and the persisted field
+	// (Stats.Pings) so latency is stored in history and charted.
+	a.attachPingResults(data)
 
 	return a.attachSystemDetails(data, cacheTimeMs, options.IncludeDetails)
+}
+
+// attachPingResults fills both the realtime payload (PingResults) and the
+// persisted/charted field (Stats.Pings) from the ping manager's latest snapshot.
+func (a *Agent) attachPingResults(data *system.CombinedData) {
+	results := a.pingManager.Results()
+	data.PingResults = a.pingManager.sortedResults()
+	if len(results) > 0 {
+		data.Stats.Pings = results
+	} else {
+		data.Stats.Pings = nil
+	}
 }
 
 // Start initializes and starts the agent with optional WebSocket connection

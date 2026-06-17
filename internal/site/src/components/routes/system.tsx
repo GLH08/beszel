@@ -13,6 +13,7 @@ import { TemperatureChart, BatteryChart } from "./system/charts/sensor-charts"
 import { GpuPowerChart, GpuDetailCharts } from "./system/charts/gpu-charts"
 import { LazyContainersTable, LazySmartTable, LazySystemdTable } from "./system/lazy-tables"
 import { LoadAverageChart } from "./system/charts/load-average-chart"
+import { LatencyChart } from "./system/charts/latency-chart"
 import { ContainerIcon, CpuIcon, GaugeIcon, HardDriveIcon, TerminalSquareIcon } from "lucide-react"
 import { GpuIcon } from "../ui/icons"
 import SystemdTable from "../systemd-table/systemd-table"
@@ -126,6 +127,8 @@ export default memo(function SystemDetail({ id }: { id: string }) {
 
 					<LoadAverageChart chartData={chartData} grid={grid} dataEmpty={dataEmpty} />
 
+					<LatencyChart chartData={chartData} grid={grid} dataEmpty={dataEmpty} />
+
 					<TemperatureChart {...coreProps} />
 
 					<BatteryChart {...coreProps} />
@@ -203,6 +206,7 @@ export default memo(function SystemDetail({ id }: { id: string }) {
 						<CpuChart {...coreProps} />
 						<MemoryChart {...coreProps} />
 						<LoadAverageChart chartData={chartData} grid={grid} dataEmpty={dataEmpty} />
+						<LatencyChart chartData={chartData} grid={grid} dataEmpty={dataEmpty} />
 						<BandwidthChart {...coreProps} systemStats={systemStats} />
 						<TemperatureChart {...coreProps} setPageBottomExtraMargin={setPageBottomExtraMargin} />
 						<BatteryChart {...coreProps} />
