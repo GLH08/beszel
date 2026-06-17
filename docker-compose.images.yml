@@ -26,6 +26,9 @@ services:
     restart: unless-stopped
     # host networking so the agent sees the real host NICs (upload / download / speed)
     network_mode: host
+    # host PID namespace so the Top Processes feature can see all host processes
+    # (otherwise the agent only sees its own container's processes)
+    pid: host
     depends_on:
       - beszel
     volumes:
