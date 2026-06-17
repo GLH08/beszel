@@ -240,6 +240,26 @@ export interface Process {
 	m: number
 }
 
+/** Latency-test result for a single ping target (realtime only, not persisted). */
+export interface PingResult {
+	/** target id */
+	id: string
+	/** most recent latency in ms (0 if last probe failed) */
+	l: number
+	/** packet loss percentage */
+	lo: number
+	/** average latency in ms */
+	a: number
+}
+
+/** A global ping target stored in the "monitors" collection. */
+export interface MonitorRecord extends RecordModel {
+	name: string
+	host: string
+	port: number
+	enabled: boolean
+}
+
 export interface AlertRecord extends RecordModel {
 	id: string
 	system: string
