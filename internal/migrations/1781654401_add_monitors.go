@@ -13,7 +13,7 @@ func init() {
 	m.Register(func(app core.App) error {
 		col := core.NewBaseCollection("monitors")
 		// any authenticated user can manage ping targets (shared globally)
-		rule := types.Pointer("")
+		rule := types.Pointer("@request.auth.id != \"\"")
 		col.ListRule = rule
 		col.ViewRule = rule
 		col.CreateRule = rule

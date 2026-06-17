@@ -28,7 +28,7 @@ export function LatencyTable() {
 			.then((items) => {
 				if (active) setMonitors(items.filter((m) => m.enabled))
 			})
-			.catch(() => {})
+			.catch((err) => console.error("load monitors for latency table", err))
 		return () => {
 			active = false
 		}

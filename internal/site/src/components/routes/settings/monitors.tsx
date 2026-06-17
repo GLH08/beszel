@@ -24,7 +24,7 @@ export default function MonitorsSettings() {
 			.then((items) => {
 				if (active) setMonitors(items)
 			})
-			.catch(() => {})
+			.catch((err) => console.error("load monitors", err))
 			.finally(() => active && setLoading(false))
 		// subscribe to changes so the table stays in sync
 		let unsub: (() => void) | undefined
