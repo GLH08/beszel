@@ -13,8 +13,12 @@
 			"Bash(git show:*)",
 			"Bash(git fetch:*)",
 			"Bash(git merge:*)",
+			"Bash(git push:*)",
+			"Bash(git pull:*)",
 			"Bash(git stash:*)",
 			"Bash(git restore:*)",
+			"Bash(git remote:*)",
+			"Bash(git config:*)",
 			"Bash(make:*)",
 			"Bash(go build:*)",
 			"Bash(go test:*)",
@@ -42,13 +46,23 @@
 			"Bash(find:*)",
 			"Bash(which:*)",
 			"Bash(where:*)",
+			"Bash(cd:*)",
+			"Bash(export:*)",
+			"Bash(rmdir:*)",
+			"Bash(mkdir:*)",
+			"Bash(cp:*)",
+			"Bash(mv:*)",
+			"Bash(touch:*)",
 			"Bash(go version)",
 			"Bash(bun --version)",
 			"Bash(node --version)",
 			"Bash(dotnet --version)",
 			"Bash(rm ./build/*)",
+			"Bash(rm -f *)",
+			"Bash(rm -rf ./build)",
 			"Bash(go clean -cache)",
-			"Bash(go clean -testcache)"
+			"Bash(go clean -testcache)",
+			"Bash(npx @biomejs/biome:*)"
 		]
 	}
 }
