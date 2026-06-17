@@ -224,6 +224,20 @@ export interface SystemStatsRecord extends RecordModel {
 	created: string | number
 }
 
+/** A single entry in the top-processes snapshot (realtime only, not persisted). */
+export interface Process {
+	/** process id */
+	pid: number
+	/** user */
+	u?: string
+	/** command line (truncated) */
+	c?: string
+	/** cpu percent */
+	cpu: number
+	/** memory percent of total RAM */
+	m: number
+}
+
 export interface AlertRecord extends RecordModel {
 	id: string
 	system: string

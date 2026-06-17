@@ -19,6 +19,7 @@ import { chartTimeData, listen, parseSemVer, useBrowserStorage } from "@/lib/uti
 import type {
 	ChartData,
 	ContainerStatsRecord,
+	Process,
 	SystemDetailsRecord,
 	SystemInfo,
 	SystemRecord,
@@ -52,6 +53,7 @@ export function useSystemData(id: string) {
 	const statsRequestId = useRef(0)
 	const [chartLoading, setChartLoading] = useState(true)
 	const [details, setDetails] = useState<SystemDetailsRecord>({} as SystemDetailsRecord)
+	const [topProcesses, setTopProcesses] = useState<Process[]>([])
 
 	useEffect(() => {
 		return () => {
@@ -62,6 +64,7 @@ export function useSystemData(id: string) {
 			setSystemStats([])
 			setContainerData([])
 			setDetails({} as SystemDetailsRecord)
+			setTopProcesses([])
 			$containerFilter.set("")
 		}
 	}, [id])
@@ -119,13 +122,16 @@ export function useSystemData(id: string) {
 		pb.realtime
 			.subscribe(
 				`rt_metrics`,
-				(data: { container: ContainerStatsRecord[]; info: SystemInfo; stats: SystemStats }) => {
+				(data: { container: ContainerStatsRecord[]; info: SystemInfo; stats: SystemStats; top?: Process[] }) => {
 					const now = Date.now()
 					const statsPoint = { created: now, stats: data.stats } as SystemStatsRecord
 					const containerPoint =
 						data.container?.length > 0
 							? makeContainerPoint(now, data.container as unknown as ContainerStatsRecord["stats"])
 							: null
+					if (data.top) {
+						setTopProcesses(data.top)
+					}
 					// on first message, make sure we clear out data from other time periods
 					if (isFirst) {
 						isFirst = false
@@ -325,6 +331,7 @@ export function useSystemData(id: string) {
 		chartData,
 		containerChartConfigs,
 		details,
+		topProcesses,
 		grid,
 		setGrid,
 		displayMode,

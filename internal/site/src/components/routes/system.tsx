@@ -17,6 +17,7 @@ import { ContainerIcon, CpuIcon, HardDriveIcon, TerminalSquareIcon } from "lucid
 import { GpuIcon } from "../ui/icons"
 import SystemdTable from "../systemd-table/systemd-table"
 import ContainersTable from "../containers-table/containers-table"
+import { ProcessesTable } from "../processes-table/processes-table"
 
 const SEMVER_0_14_0 = parseSemVer("0.14.0")
 const SEMVER_0_15_0 = parseSemVer("0.15.0")
@@ -31,6 +32,7 @@ export default memo(function SystemDetail({ id }: { id: string }) {
 		chartData,
 		containerChartConfigs,
 		details,
+		topProcesses,
 		grid,
 		setGrid,
 		displayMode,
@@ -69,6 +71,7 @@ export default memo(function SystemDetail({ id }: { id: string }) {
 	if (hasGpu) tabs.push("gpu")
 	if (hasContainers) tabs.push("containers")
 	if (hasSystemd) tabs.push("services")
+	tabs.push("processes")
 	tabsRef.current = tabs
 
 	// shared chart props
@@ -145,6 +148,8 @@ export default memo(function SystemDetail({ id }: { id: string }) {
 				{hasContainersTable && <LazyContainersTable systemId={system.id} />}
 
 				{hasSystemd && <LazySystemdTable systemId={system.id} />}
+
+				<ProcessesTable processes={topProcesses} />
 			</>
 		)
 	}
@@ -179,6 +184,10 @@ export default memo(function SystemDetail({ id }: { id: string }) {
 							<Trans>Services</Trans>
 						</TabsTrigger>
 					)}
+					<TabsTrigger value="processes" className="w-full flex items-center gap-2">
+						<TerminalSquareIcon className="size-3.5" />
+						<Trans>Processes</Trans>
+					</TabsTrigger>
 				</TabsList>
 
 				<TabsContent value="core" forceMount className={activeTab === "core" ? "contents" : "hidden"}>
@@ -261,6 +270,10 @@ export default memo(function SystemDetail({ id }: { id: string }) {
 						{mountedTabs.has("services") && <SystemdTable systemId={system.id} />}
 					</TabsContent>
 				)}
+
+				<TabsContent value="processes" forceMount className={activeTab === "processes" ? "contents" : "hidden"}>
+					{mountedTabs.has("processes") && <ProcessesTable processes={topProcesses} />}
+				</TabsContent>
 			</Tabs>
 		)
 	}
