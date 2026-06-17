@@ -13,11 +13,12 @@ import { TemperatureChart, BatteryChart } from "./system/charts/sensor-charts"
 import { GpuPowerChart, GpuDetailCharts } from "./system/charts/gpu-charts"
 import { LazyContainersTable, LazySmartTable, LazySystemdTable } from "./system/lazy-tables"
 import { LoadAverageChart } from "./system/charts/load-average-chart"
-import { ContainerIcon, CpuIcon, HardDriveIcon, TerminalSquareIcon } from "lucide-react"
+import { ContainerIcon, CpuIcon, GaugeIcon, HardDriveIcon, TerminalSquareIcon } from "lucide-react"
 import { GpuIcon } from "../ui/icons"
 import SystemdTable from "../systemd-table/systemd-table"
 import ContainersTable from "../containers-table/containers-table"
 import { ProcessesTable } from "../processes-table/processes-table"
+import { TrafficCard } from "../traffic-card/traffic-card"
 
 const SEMVER_0_14_0 = parseSemVer("0.14.0")
 const SEMVER_0_15_0 = parseSemVer("0.15.0")
@@ -72,6 +73,7 @@ export default memo(function SystemDetail({ id }: { id: string }) {
 	if (hasContainers) tabs.push("containers")
 	if (hasSystemd) tabs.push("services")
 	tabs.push("processes")
+	tabs.push("traffic")
 	tabsRef.current = tabs
 
 	// shared chart props
@@ -150,6 +152,8 @@ export default memo(function SystemDetail({ id }: { id: string }) {
 				{hasSystemd && <LazySystemdTable systemId={system.id} />}
 
 				<ProcessesTable processes={topProcesses} />
+
+				<TrafficCard systemId={system.id} />
 			</>
 		)
 	}
@@ -187,6 +191,10 @@ export default memo(function SystemDetail({ id }: { id: string }) {
 					<TabsTrigger value="processes" className="w-full flex items-center gap-2">
 						<TerminalSquareIcon className="size-3.5" />
 						<Trans>Processes</Trans>
+					</TabsTrigger>
+					<TabsTrigger value="traffic" className="w-full flex items-center gap-2">
+						<GaugeIcon className="size-3.5" />
+						<Trans>Traffic</Trans>
 					</TabsTrigger>
 				</TabsList>
 
@@ -273,6 +281,10 @@ export default memo(function SystemDetail({ id }: { id: string }) {
 
 				<TabsContent value="processes" forceMount className={activeTab === "processes" ? "contents" : "hidden"}>
 					{mountedTabs.has("processes") && <ProcessesTable processes={topProcesses} />}
+				</TabsContent>
+
+				<TabsContent value="traffic" forceMount className={activeTab === "traffic" ? "contents" : "hidden"}>
+					{mountedTabs.has("traffic") && <TrafficCard systemId={system.id} />}
 				</TabsContent>
 			</Tabs>
 		)

@@ -95,6 +95,9 @@ export const SystemDialog = ({ setOpen, system }: { setOpen: (open: boolean) => 
 		e.preventDefault()
 		const formData = new FormData(e.target as HTMLFormElement)
 		const data = Object.fromEntries(formData) as Record<string, any>
+		// coerce numeric fields (FormData returns strings)
+		data.traffic_quota = Number(data.traffic_quota) || 0
+		data.traffic_reset_day = Number(data.traffic_reset_day) || 1
 		data.users = pb.authStore.record!.id
 		try {
 			setOpen(false)
@@ -212,6 +215,29 @@ export const SystemDialog = ({ setOpen, system }: { setOpen: (open: boolean) => 
 							<Trans>Token</Trans>
 						</Label>
 						<InputCopy value={token} id="tkn" name="tkn" />
+						<Label htmlFor="traffic_quota" className="xs:text-end">
+							<Trans comment="Monthly traffic limit in GiB; 0 means unlimited">Traffic quota (GiB)</Trans>
+						</Label>
+						<Input
+							id="traffic_quota"
+							name="traffic_quota"
+							type="number"
+							min={0}
+							step={1}
+							defaultValue={system?.traffic_quota ?? 0}
+						/>
+						<Label htmlFor="traffic_reset_day" className="xs:text-end">
+							<Trans comment="Day of month the traffic counter resets; 1 means natural month">Traffic reset day</Trans>
+						</Label>
+						<Input
+							id="traffic_reset_day"
+							name="traffic_reset_day"
+							type="number"
+							min={1}
+							max={28}
+							step={1}
+							defaultValue={system?.traffic_reset_day ?? 1}
+						/>
 					</div>
 					<DialogFooter className="flex justify-end gap-x-2 gap-y-3 flex-col mt-5">
 						{/* Docker */}

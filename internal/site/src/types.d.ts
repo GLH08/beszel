@@ -31,6 +31,8 @@ export interface SystemRecord extends RecordModel {
 	info: SystemInfo
 	v: string
 	updated: string
+	traffic_quota?: number
+	traffic_reset_day?: number
 }
 
 export interface SystemInfo {
