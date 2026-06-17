@@ -14,6 +14,10 @@ services:
     restart: unless-stopped
     environment:
       APP_URL: ${APP_URL:-http://localhost:8090}
+      # Agent image shown in the add-system install snippets. Defaults to the
+      # fork's GHCR agent so new systems install the fork agent (with ping /
+      # processes support) instead of the upstream image.
+      AGENT_IMAGE: ${AGENT_IMAGE:-ghcr.io/glh08/beszel/beszel-agent:custom}
     ports:
       - "8090:8090"
     volumes:

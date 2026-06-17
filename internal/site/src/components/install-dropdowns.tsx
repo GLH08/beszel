@@ -1,6 +1,6 @@
 import { i18n } from "@lingui/core"
 import { memo } from "react"
-import { copyToClipboard, getHubURL } from "@/lib/utils"
+import { copyToClipboard, getAgentImage, getHubURL } from "@/lib/utils"
 import { DropdownMenuContent, DropdownMenuItem } from "./ui/dropdown-menu"
 
 // const isbeta = beszel.hub_version.includes("beta")
@@ -25,7 +25,7 @@ const getScriptUrl = (path: string = "") => {
 export function copyDockerCompose(port = "45876", publicKey: string, token: string) {
 	copyToClipboard(`services:
   beszel-agent:
-    image: henrygd/beszel-agent
+    image: ${getAgentImage()}
     container_name: beszel-agent
     restart: unless-stopped
     network_mode: host
@@ -43,7 +43,7 @@ export function copyDockerCompose(port = "45876", publicKey: string, token: stri
 
 export function copyDockerRun(port = "45876", publicKey: string, token: string) {
 	copyToClipboard(
-		`docker run -d --name beszel-agent --network host --restart unless-stopped -v /var/run/docker.sock:/var/run/docker.sock:ro -v beszel_agent_data:/var/lib/beszel-agent -e KEY="${publicKey}" -e LISTEN=${port} -e TOKEN="${token}" -e HUB_URL="${getHubURL()}" henrygd/beszel-agent`
+		`docker run -d --name beszel-agent --network host --restart unless-stopped -v /var/run/docker.sock:/var/run/docker.sock:ro -v beszel_agent_data:/var/lib/beszel-agent -e KEY="${publicKey}" -e LISTEN=${port} -e TOKEN="${token}" -e HUB_URL="${getHubURL()}" ${getAgentImage()}`
 	)
 }
 

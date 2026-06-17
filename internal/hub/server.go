@@ -14,6 +14,7 @@ type PublicAppInfo struct {
 	BASE_PATH           string
 	HUB_VERSION         string
 	HUB_URL             string
+	AGENT_IMAGE         string
 	OAUTH_DISABLE_POPUP bool `json:"OAUTH_DISABLE_POPUP,omitempty"`
 }
 
@@ -34,6 +35,13 @@ func getPublicAppInfo(hub *Hub) PublicAppInfo {
 		BASE_PATH:   strings.TrimSuffix(parsedURL.Path, "/") + "/",
 		HUB_VERSION: beszel.Version,
 		HUB_URL:     hub.appURL,
+		// AGENT_IMAGE overrides the Docker image shown in the add-system install
+		// snippets (defaults to the upstream image). Forks that publish their own
+		// agent image set this env var so new systems install the fork's agent.
+		AGENT_IMAGE: "henrygd/beszel-agent",
+	}
+	if val, _ := utils.GetEnv("AGENT_IMAGE"); val != "" {
+		info.AGENT_IMAGE = val
 	}
 	if val, _ := utils.GetEnv("OAUTH_DISABLE_POPUP"); val == "true" {
 		info.OAUTH_DISABLE_POPUP = true
