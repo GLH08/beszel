@@ -51,6 +51,7 @@ func NewHandlerRegistry() *HandlerRegistry {
 	registry.Register(common.GetContainerInfo, &GetContainerInfoHandler{})
 	registry.Register(common.GetSmartData, &GetSmartDataHandler{})
 	registry.Register(common.GetSystemdInfo, &GetSystemdInfoHandler{})
+	registry.Register(common.SetConfig, &SetConfigHandler{})
 
 	return registry
 }
@@ -202,4 +203,22 @@ func (h *GetSystemdInfoHandler) Handle(hctx *HandlerContext) error {
 	}
 
 	return hctx.SendResponse(details, hctx.RequestID)
+}
+
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+
+// SetConfigHandler receives monitor configuration (ping targets) pushed from
+// the hub and applies it to the agent's ping manager.
+type SetConfigHandler struct{}
+
+func (h *SetConfigHandler) Handle(hctx *HandlerContext) error {
+	var cfg common.MonitorConfig
+	if err := cbor.Unmarshal(hctx.Request.Data, &cfg); err != nil {
+		return err
+	}
+	if hctx.Agent.pingManager != nil {
+		hctx.Agent.pingManager.SetTargets(cfg.PingTargets)
+	}
+	return hctx.SendResponse(common.ConfigAck{Applied: true}, hctx.RequestID)
 }

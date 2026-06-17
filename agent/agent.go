@@ -5,6 +5,7 @@
 package agent
 
 import (
+	"context"
 	"log/slog"
 	"strings"
 	"sync"
@@ -49,6 +50,7 @@ type Agent struct {
 	smartManager              *SmartManager                                         // Manages SMART data
 	systemdManager            *systemdManager                                       // Manages systemd services
 	processSampler            *processSampler                                       // Computes top-process CPU% snapshots
+	pingManager               *pingManager                                          // Probes configured ping targets
 }
 
 // NewAgent creates a new agent with the given data directory for persisting data.
@@ -147,6 +149,10 @@ func NewAgent(dataDir ...string) (agent *Agent, err error) {
 	// initialize process sampler for top-process snapshots
 	agent.processSampler = newProcessSampler()
 
+	// initialize ping manager and start the probe loop
+	agent.pingManager = newPingManager()
+	go agent.pingManager.Run(context.Background())
+
 	// if debugging, print stats
 	if agent.debug {
 		slog.Debug("Stats", "data", agent.gatherStats(common.DataRequestOptions{CacheTimeMs: defaultDataCacheTimeMs, IncludeDetails: true}))
@@ -163,9 +169,10 @@ func (a *Agent) gatherStats(options common.DataRequestOptions) *system.CombinedD
 	data, isCached := a.cache.Get(cacheTimeMs)
 	if isCached {
 		slog.Debug("Cached data", "cacheTimeMs", cacheTimeMs)
-		// top processes are computed fresh every realtime call (never cached)
+		// top processes and ping results are computed fresh every realtime call (never cached)
 		if cacheTimeMs <= 1000 {
 			data.TopProcesses = a.processSampler.gatherTopProcesses()
+			data.PingResults = a.pingManager.sortedResults()
 		}
 		return data
 	}
@@ -219,9 +226,10 @@ func (a *Agent) gatherStats(options common.DataRequestOptions) *system.CombinedD
 
 	a.cache.Set(data, cacheTimeMs)
 
-	// top processes are computed fresh on realtime requests (never cached/persisted)
+	// top processes and ping results are computed fresh on realtime requests (never cached/persisted)
 	if cacheTimeMs <= 1000 {
 		data.TopProcesses = a.processSampler.gatherTopProcesses()
+		data.PingResults = a.pingManager.sortedResults()
 	}
 
 	return a.attachSystemDetails(data, cacheTimeMs, options.IncludeDetails)

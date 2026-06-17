@@ -182,4 +182,7 @@ type CombinedData struct {
 	// TopProcesses is a snapshot of the most CPU-intensive processes.
 	// Not persisted to history — served only via the realtime channel.
 	TopProcesses []*Process `json:"top,omitempty" cbor:"5,keyasint,omitempty"`
+	// PingResults is the latest latency-test results for configured ping targets.
+	// Not persisted to history — served only via the realtime channel.
+	PingResults []*PingResult `json:"ping,omitempty" cbor:"6,keyasint,omitempty"`
 }

@@ -22,6 +22,8 @@ const (
 	GetSmartData
 	// Request detailed systemd service info from agent
 	GetSystemdInfo
+	// Push monitor config (e.g. ping targets) from hub to agent
+	SetConfig
 	// Add new actions here...
 )
 
@@ -73,4 +75,22 @@ type ContainerInfoRequest struct {
 
 type SystemdInfoRequest struct {
 	ServiceName string `cbor:"0,keyasint"`
+}
+
+// PingTarget is a single latency-test target pushed from the hub to agents.
+type PingTarget struct {
+	Id   string `cbor:"0,keyasint"`
+	Host string `cbor:"1,keyasint"`
+	Port uint16 `cbor:"2,keyasint"`
+}
+
+// MonitorConfig is the config payload pushed to agents via the SetConfig action.
+// It currently only carries ping targets; future monitor types can append fields.
+type MonitorConfig struct {
+	PingTargets []PingTarget `cbor:"0,keyasint,omitempty"`
+}
+
+// ConfigAck acknowledges that the agent received and applied a MonitorConfig.
+type ConfigAck struct {
+	Applied bool `cbor:"0,keyasint"`
 }
