@@ -29,6 +29,9 @@ export function copyDockerCompose(port = "45876", publicKey: string, token: stri
     container_name: beszel-agent
     restart: unless-stopped
     network_mode: host
+    # host PID namespace so Top Processes can see all host processes
+    # (otherwise the agent only sees its own container's processes)
+    pid: host
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./beszel_agent_data:/var/lib/beszel-agent
@@ -43,7 +46,7 @@ export function copyDockerCompose(port = "45876", publicKey: string, token: stri
 
 export function copyDockerRun(port = "45876", publicKey: string, token: string) {
 	copyToClipboard(
-		`docker run -d --name beszel-agent --network host --restart unless-stopped -v /var/run/docker.sock:/var/run/docker.sock:ro -v beszel_agent_data:/var/lib/beszel-agent -e KEY="${publicKey}" -e LISTEN=${port} -e TOKEN="${token}" -e HUB_URL="${getHubURL()}" ${getAgentImage()}`
+		`docker run -d --name beszel-agent --network host --pid host --restart unless-stopped -v /var/run/docker.sock:/var/run/docker.sock:ro -v beszel_agent_data:/var/lib/beszel-agent -e KEY="${publicKey}" -e LISTEN=${port} -e TOKEN="${token}" -e HUB_URL="${getHubURL()}" ${getAgentImage()}`
 	)
 }
 
