@@ -1,0 +1,38 @@
+# Self-contained hub image: builds the web UI AND the Go binary from source,
+# so the stack can be deployed with `docker compose up --build` and no host
+# toolchain. The upstream internal/dockerfile_hub expects the frontend (dist)
+# to be built beforehand (CI runs `bun run build` first), so it can't be used
+# for a pure source checkout.
+
+# 1) Build the web UI (gets embedded into the hub binary via //go:embed all:dist)
+FROM --platform=$BUILDPLATFORM oven/bun:1 AS site
+WORKDIR /site
+COPY internal/site/package.json internal/site/bun.lock ./
+RUN bun install --no-save
+COPY internal/site/ ./
+RUN bun run build
+
+# 2) Build the hub binary with the freshly built frontend embedded
+FROM --platform=$BUILDPLATFORM golang:alpine AS builder
+WORKDIR /app
+RUN apk add --no-cache ca-certificates && update-ca-certificates
+COPY go.mod go.sum ./
+RUN go mod download
+COPY . ./
+# dist is excluded by .dockerignore, so overlay the build output from the site stage
+COPY --from=site /site/dist ./internal/site/dist
+ARG TARGETOS TARGETARCH
+RUN CGO_ENABLED=0 GOGC=75 GOOS=$TARGETOS GOARCH=$TARGETARCH go build -ldflags "-w -s" -o /beszel ./internal/cmd/hub
+
+# 3) Minimal final image
+FROM scratch
+COPY --from=builder /beszel /
+COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
+
+# Ensure data persistence across container recreations
+VOLUME ["/beszel_data"]
+
+EXPOSE 8090
+
+ENTRYPOINT [ "/beszel" ]
+CMD ["serve", "--http=0.0.0.0:8090"]
