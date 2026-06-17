@@ -123,8 +123,18 @@ func (sm *SystemManager) bindEventHooks() {
 	sm.hub.OnRecordAfterUpdateSuccess("systems").BindFunc(sm.onRecordAfterUpdateSuccess)
 	sm.hub.OnRecordAfterDeleteSuccess("systems").BindFunc(sm.onRecordAfterDeleteSuccess)
 	sm.hub.OnRecordAfterUpdateSuccess("fingerprints").BindFunc(sm.onTokenRotated)
+	// push monitor config to agents when monitors change
+	sm.hub.OnRecordAfterCreateSuccess("monitors").BindFunc(sm.onMonitorsChanged)
+	sm.hub.OnRecordAfterUpdateSuccess("monitors").BindFunc(sm.onMonitorsChanged)
+	sm.hub.OnRecordAfterDeleteSuccess("monitors").BindFunc(sm.onMonitorsChanged)
 	sm.hub.OnRealtimeSubscribeRequest().BindFunc(sm.onRealtimeSubscribeRequest)
 	sm.hub.OnRealtimeConnectRequest().BindFunc(sm.onRealtimeConnectRequest)
+}
+
+// onMonitorsChanged pushes the updated monitor config to all connected agents.
+func (sm *SystemManager) onMonitorsChanged(e *core.RecordEvent) error {
+	go sm.PushConfigToAll()
+	return e.Next()
 }
 
 // onTokenRotated handles fingerprint token rotation events.
@@ -321,6 +331,9 @@ func (sm *SystemManager) AddWebSocketSystem(systemId string, agentVersion semver
 	if err := sm.AddRecord(systemRecord, system); err != nil {
 		return err
 	}
+	// push current monitor config to the freshly connected agent
+	cfg := loadMonitorConfig(sm.hub)
+	go sm.pushConfigToSystem(system, cfg)
 	return nil
 }
 
