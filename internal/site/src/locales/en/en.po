@@ -107,6 +107,10 @@ msgstr "Active Alerts"
 msgid "Active state"
 msgstr "Active state"
 
+#: src/components/routes/settings/monitors.tsx
+msgid "Add"
+msgstr "Add"
+
 #: src/components/add-system.tsx
 #: src/components/add-system.tsx
 #: src/components/navbar.tsx
@@ -115,6 +119,10 @@ msgstr "Active state"
 #: src/components/routes/settings/quiet-hours.tsx
 msgid "Add {foo}"
 msgstr "Add {foo}"
+
+#: src/components/routes/settings/monitors.tsx
+msgid "Add hosts or IPs to measure latency from each monitored system. Targets are shared across all systems."
+msgstr "Add hosts or IPs to measure latency from each monitored system. Targets are shared across all systems."
 
 #: src/components/routes/settings/notifications.tsx
 msgid "Add URL"
@@ -692,6 +700,10 @@ msgstr "Email notifications"
 msgid "Empty"
 msgstr "Empty"
 
+#: src/components/routes/settings/monitors.tsx
+msgid "Enabled"
+msgstr "Enabled"
+
 #: src/components/routes/settings/quiet-hours.tsx
 #: src/components/routes/settings/quiet-hours.tsx
 msgid "End Time"
@@ -903,6 +915,8 @@ msgid "Homebrew command"
 msgstr "Homebrew command"
 
 #: src/components/add-system.tsx
+#: src/components/routes/settings/monitors.tsx
+#: src/components/routes/settings/monitors.tsx
 msgid "Host / IP"
 msgstr "Host / IP"
 
@@ -959,6 +973,10 @@ msgstr "Invalid email address."
 #: src/components/routes/settings/general.tsx
 msgid "Language"
 msgstr "Language"
+
+#: src/components/latency-table/latency-table.tsx
+msgid "Latency"
+msgstr "Latency"
 
 #: src/components/systems-table/systems-table.tsx
 msgid "Layout"
@@ -1091,6 +1109,8 @@ msgstr "Most CPU-intensive processes, updated live."
 #: src/components/add-system.tsx
 #: src/components/alerts-history-columns.tsx
 #: src/components/containers-table/containers-table-columns.tsx
+#: src/components/routes/settings/monitors.tsx
+#: src/components/routes/settings/monitors.tsx
 #: src/components/systemd-table/systemd-table-columns.tsx
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Name"
@@ -1122,6 +1142,10 @@ msgstr "Network unit"
 #: src/components/systemd-table/systemd-table.tsx
 msgid "No"
 msgstr "No"
+
+#: src/components/routes/settings/monitors.tsx
+msgid "No ping targets yet."
+msgstr "No ping targets yet."
 
 #: src/components/command-palette.tsx
 #: src/components/systemd-table/systemd-table.tsx
@@ -1267,6 +1291,11 @@ msgstr "Persistence"
 msgid "PID"
 msgstr "PID"
 
+#: src/components/routes/settings/layout.tsx
+#: src/components/routes/settings/monitors.tsx
+msgid "Ping Targets"
+msgstr "Ping Targets"
+
 #: src/components/routes/settings/notifications.tsx
 msgid "Please <0>configure an SMTP server</0> to ensure alerts are delivered."
 msgstr "Please <0>configure an SMTP server</0> to ensure alerts are delivered."
@@ -1301,6 +1330,8 @@ msgid "Please sign in to your account"
 msgstr "Please sign in to your account"
 
 #: src/components/add-system.tsx
+#: src/components/routes/settings/monitors.tsx
+#: src/components/routes/settings/monitors.tsx
 msgid "Port"
 msgstr "Port"
 
@@ -1578,6 +1609,7 @@ msgstr "Switch theme"
 #: src/components/add-system.tsx
 #: src/components/alerts-history-columns.tsx
 #: src/components/containers-table/containers-table-columns.tsx
+#: src/components/latency-table/latency-table.tsx
 #: src/components/navbar.tsx
 #: src/components/routes/settings/quiet-hours.tsx
 #: src/components/routes/settings/quiet-hours.tsx

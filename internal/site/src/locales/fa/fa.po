@@ -112,6 +112,10 @@ msgstr " هشدارهای فعال"
 msgid "Active state"
 msgstr "وضعیت فعال"
 
+#: src/components/routes/settings/monitors.tsx
+msgid "Add"
+msgstr ""
+
 #: src/components/add-system.tsx
 #: src/components/add-system.tsx
 #: src/components/navbar.tsx
@@ -120,6 +124,10 @@ msgstr "وضعیت فعال"
 #: src/components/routes/settings/quiet-hours.tsx
 msgid "Add {foo}"
 msgstr "افزودن {foo}"
+
+#: src/components/routes/settings/monitors.tsx
+msgid "Add hosts or IPs to measure latency from each monitored system. Targets are shared across all systems."
+msgstr ""
 
 #: src/components/routes/settings/notifications.tsx
 msgid "Add URL"
@@ -697,6 +705,10 @@ msgstr "اعلان‌های ایمیلی"
 msgid "Empty"
 msgstr "خالی"
 
+#: src/components/routes/settings/monitors.tsx
+msgid "Enabled"
+msgstr ""
+
 #: src/components/routes/settings/quiet-hours.tsx
 #: src/components/routes/settings/quiet-hours.tsx
 msgid "End Time"
@@ -908,6 +920,8 @@ msgid "Homebrew command"
 msgstr "دستور Homebrew"
 
 #: src/components/add-system.tsx
+#: src/components/routes/settings/monitors.tsx
+#: src/components/routes/settings/monitors.tsx
 msgid "Host / IP"
 msgstr "میزبان / IP"
 
@@ -964,6 +978,10 @@ msgstr "آدرس ایمیل نامعتبر است."
 #: src/components/routes/settings/general.tsx
 msgid "Language"
 msgstr "زبان"
+
+#: src/components/latency-table/latency-table.tsx
+msgid "Latency"
+msgstr ""
 
 #: src/components/systems-table/systems-table.tsx
 msgid "Layout"
@@ -1096,6 +1114,8 @@ msgstr ""
 #: src/components/add-system.tsx
 #: src/components/alerts-history-columns.tsx
 #: src/components/containers-table/containers-table-columns.tsx
+#: src/components/routes/settings/monitors.tsx
+#: src/components/routes/settings/monitors.tsx
 #: src/components/systemd-table/systemd-table-columns.tsx
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Name"
@@ -1127,6 +1147,10 @@ msgstr "واحد شبکه"
 #: src/components/systemd-table/systemd-table.tsx
 msgid "No"
 msgstr "خیر"
+
+#: src/components/routes/settings/monitors.tsx
+msgid "No ping targets yet."
+msgstr ""
 
 #: src/components/command-palette.tsx
 #: src/components/systemd-table/systemd-table.tsx
@@ -1272,6 +1296,11 @@ msgstr "ماندگاری"
 msgid "PID"
 msgstr ""
 
+#: src/components/routes/settings/layout.tsx
+#: src/components/routes/settings/monitors.tsx
+msgid "Ping Targets"
+msgstr ""
+
 #: src/components/routes/settings/notifications.tsx
 msgid "Please <0>configure an SMTP server</0> to ensure alerts are delivered."
 msgstr "لطفاً برای اطمینان از تحویل هشدارها، یک <0>سرور SMTP پیکربندی کنید</0>."
@@ -1306,6 +1335,8 @@ msgid "Please sign in to your account"
 msgstr "لطفاً به حساب کاربری خود وارد شوید"
 
 #: src/components/add-system.tsx
+#: src/components/routes/settings/monitors.tsx
+#: src/components/routes/settings/monitors.tsx
 msgid "Port"
 msgstr "پورت"
 
@@ -1583,6 +1614,7 @@ msgstr ""
 #: src/components/add-system.tsx
 #: src/components/alerts-history-columns.tsx
 #: src/components/containers-table/containers-table-columns.tsx
+#: src/components/latency-table/latency-table.tsx
 #: src/components/navbar.tsx
 #: src/components/routes/settings/quiet-hours.tsx
 #: src/components/routes/settings/quiet-hours.tsx
