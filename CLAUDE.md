@@ -99,3 +99,4 @@ All `make` targets run from the repo root.
 - Keep the version in sync between `beszel.go` and `internal/site/package.json`.
 - When changing entity structs, preserve CBOR field numbers and consider older agents/hubs (bump the relevant `MinVersion*` only when intentionally dropping support).
 - Hub dev vs prod is a build-tag split: `development` proxies to Vite (`internal/hub/server_development.go`); the default build embeds and serves `dist/` (`internal/hub/server_production.go`).
+- **Build hygiene.** After running `go build` / `make build` / `go test` / `bun run build`, stop any lingering processes and remove throwaway artifacts so the worktree stays clean: delete `./build/` binaries (`rm -rf ./build`), drop the Go build/test caches when they grow large (`go clean -cache`, `go clean -testcache`), and remove any temp binaries spawned in the repo root. Keep only source changes in `git status`.
