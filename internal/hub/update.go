@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"strings"
 
 	"github.com/henrygd/beszel/internal/ghupdate"
 	"github.com/spf13/cobra"
@@ -32,6 +33,11 @@ func Update(cmd *cobra.Command, _ []string) {
 		ArchiveExecutable: "beszel",
 		DataDir:           dataDir,
 		UseMirror:         useMirror,
+		// AGENT_REPO (owner/repo) lets a fork hub self-update from the fork's
+		// GitHub releases instead of the upstream henrygd/beszel. The same env
+		// var is used by the agent's update command for consistency.
+		Owner: ghRepoField(0),
+		Repo:  ghRepoField(1),
 	})
 	if err != nil {
 		log.Fatal(err)
@@ -90,4 +96,14 @@ func restartService() {
 	}
 
 	ghupdate.ColorPrint(ghupdate.ColorYellow, "Service restart not attempted. If running as a service, restart manually.")
+}
+
+// ghRepoField parses AGENT_REPO (owner/repo) and returns the field at the given
+// index (0=owner, 1=repo). Empty => ghupdate default (henrygd/beszel).
+func ghRepoField(index int) string {
+	parts := strings.SplitN(os.Getenv("AGENT_REPO"), "/", 2)
+	if len(parts) == 2 && parts[index] != "" {
+		return parts[index]
+	}
+	return ""
 }

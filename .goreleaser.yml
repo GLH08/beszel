@@ -260,7 +260,10 @@ winget:
       #     branch: master
 
 release:
-  draft: true
+  # Fork change: publish releases (not draft) so GitHub's releases/latest API
+  # returns the fork's latest release, which install-agent.sh --repo and the
+  # agent's self-update rely on. Upstream uses draft: true + manual publish.
+  draft: false
 
 changelog:
   disable: true

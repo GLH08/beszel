@@ -9,7 +9,14 @@ param (
     [string]$NSSMPath = "",
     [switch]$ConfigureFirewall,
     [ValidateSet("Auto", "Scoop", "WinGet")]
-    [string]$InstallMethod = "Auto"
+    [string]$InstallMethod = "Auto",
+    # Install from a fork's GitHub releases (owner/repo) instead of the upstream
+    # henrygd/beszel. When set, AGENT_REPO is persisted to the service env so the
+    # agent's `update` command pulls new versions from the fork. The agent binary
+    # itself is still installed via Scoop/WinGet from the upstream package source
+    # (a fork-specific scoop bucket / winget manifest is not published); set
+    # AgentPath to a manually-placed fork binary to use the fork agent directly.
+    [string]$Repo = ""
 )
 
 # Check if required parameters are provided
@@ -312,7 +319,8 @@ function Install-NSSMService {
         [string]$HubUrl = "",
         [Parameter(Mandatory=$true)]
         [int]$Port,
-        [string]$NSSMPath = ""
+        [string]$NSSMPath = "",
+        [string]$Repo = ""
     )
     
     Write-Host "Installing beszel-agent service..."
@@ -365,6 +373,10 @@ function Install-NSSMService {
     & $nssmCommand set beszel-agent AppEnvironmentExtra "+TOKEN=$Token"
     & $nssmCommand set beszel-agent AppEnvironmentExtra "+HUB_URL=$HubUrl"
     & $nssmCommand set beszel-agent AppEnvironmentExtra "+PORT=$Port"
+    # Persist AGENT_REPO so the agent's `update` command pulls from the fork.
+    if ($Repo) {
+        & $nssmCommand set beszel-agent AppEnvironmentExtra "+AGENT_REPO=$Repo"
+    }
     
     # Configure log files
     $logDir = "$env:ProgramData\beszel-agent\logs"
@@ -582,7 +594,13 @@ try {
             "-AgentPath", "`"$AgentPath`"",
             "-InstallMethod", $InstallMethod
         )
-        
+
+        # Add Repo if set (fork install)
+        if ($Repo) {
+            $argumentList += "-Repo"
+            $argumentList += "`"$Repo`""
+        }
+
         # Add NSSMPath if we found it
         if ($NSSMPath) {
             $argumentList += "-NSSMPath"
@@ -601,7 +619,7 @@ try {
     # Third: If we have admin rights, install service and configure firewall
     if ($isAdmin -or $Elevated) {
         # Install the service
-        Install-NSSMService -AgentPath $AgentPath -Key $Key -Token $Token -HubUrl $Url -Port $Port -NSSMPath $NSSMPath
+        Install-NSSMService -AgentPath $AgentPath -Key $Key -Token $Token -HubUrl $Url -Port $Port -NSSMPath $NSSMPath -Repo $Repo
         
         if ($ConfigureFirewall) {
             Configure-Firewall -Port $Port

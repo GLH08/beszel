@@ -5,6 +5,7 @@ import (
 	"os"
 	"os/exec"
 	"runtime"
+	"strings"
 
 	"github.com/henrygd/beszel/internal/ghupdate"
 )
@@ -87,6 +88,11 @@ func Update(useMirror bool) error {
 		ArchiveExecutable: "beszel-agent",
 		DataDir:           dataDir,
 		UseMirror:         useMirror,
+		// AGENT_REPO (owner/repo) lets fork installs self-update from the fork's
+		// GitHub releases instead of the upstream henrygd/beszel. Set by the
+		// install scripts when installing from a fork (--repo).
+		Owner: repoOwner(),
+		Repo:  repoName(),
 	})
 	if err != nil {
 		log.Fatal(err)
@@ -124,4 +130,24 @@ func Update(useMirror bool) error {
 	}
 
 	return nil
+}
+
+// repoOwner returns the GitHub owner to self-update from, parsed from the
+// AGENT_REPO env var (format "owner/repo"). Empty => ghupdate default (henrygd).
+func repoOwner() string {
+	parts := strings.SplitN(os.Getenv("AGENT_REPO"), "/", 2)
+	if len(parts) == 2 && parts[0] != "" {
+		return parts[0]
+	}
+	return ""
+}
+
+// repoName returns the GitHub repo to self-update from, parsed from AGENT_REPO.
+// Empty => ghupdate default (beszel).
+func repoName() string {
+	parts := strings.SplitN(os.Getenv("AGENT_REPO"), "/", 2)
+	if len(parts) == 2 && parts[1] != "" {
+		return parts[1]
+	}
+	return ""
 }

@@ -15,6 +15,7 @@ type PublicAppInfo struct {
 	HUB_VERSION         string
 	HUB_URL             string
 	AGENT_IMAGE         string
+	AGENT_REPO          string
 	OAUTH_DISABLE_POPUP bool `json:"OAUTH_DISABLE_POPUP,omitempty"`
 }
 
@@ -39,9 +40,16 @@ func getPublicAppInfo(hub *Hub) PublicAppInfo {
 		// snippets (defaults to the upstream image). Forks that publish their own
 		// agent image set this env var so new systems install the fork's agent.
 		AGENT_IMAGE: "henrygd/beszel-agent",
+		// AGENT_REPO (owner/repo) makes the binary install snippets and the
+		// agent's self-update pull from a fork's GitHub releases instead of the
+		// upstream henrygd/beszel. Empty for upstream (no behavior change).
+		AGENT_REPO: "",
 	}
 	if val, _ := utils.GetEnv("AGENT_IMAGE"); val != "" {
 		info.AGENT_IMAGE = val
+	}
+	if val, _ := utils.GetEnv("AGENT_REPO"); val != "" {
+		info.AGENT_REPO = val
 	}
 	if val, _ := utils.GetEnv("OAUTH_DISABLE_POPUP"); val == "true" {
 		info.OAUTH_DISABLE_POPUP = true

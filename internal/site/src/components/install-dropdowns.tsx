@@ -1,6 +1,6 @@
 import { i18n } from "@lingui/core"
 import { memo } from "react"
-import { copyToClipboard, getAgentImage, getHubURL } from "@/lib/utils"
+import { copyToClipboard, getAgentImage, getAgentRepo, getHubURL } from "@/lib/utils"
 import { DropdownMenuContent, DropdownMenuItem } from "./ui/dropdown-menu"
 
 // const isbeta = beszel.hub_version.includes("beta")
@@ -58,12 +58,19 @@ export function copyLinuxCommand(port = "45876", publicKey: string, token: strin
 	if (!brew && (i18n.locale + navigator.language).includes("zh-CN")) {
 		cmd += ` --china-mirrors`
 	}
+	// install from a fork's GitHub releases when the hub overrides the repo
+	const repo = getAgentRepo()
+	if (!brew && repo) {
+		cmd += ` --repo ${repo}`
+	}
 	copyToClipboard(cmd)
 }
 
 export function copyWindowsCommand(port = "45876", publicKey: string, token: string) {
+	const repo = getAgentRepo()
+	const repoArg = repo ? ` -Repo ${repo}` : ""
 	copyToClipboard(
-		`& iwr -useb ${getScriptUrl()} -OutFile "$env:TEMP\\install-agent.ps1"; & Powershell -ExecutionPolicy Bypass -File "$env:TEMP\\install-agent.ps1" -Key "${publicKey}" -Port ${port} -Token "${token}" -Url "${getHubURL()}"`
+		`& iwr -useb ${getScriptUrl()} -OutFile "$env:TEMP\\install-agent.ps1"; & Powershell -ExecutionPolicy Bypass -File "$env:TEMP\\install-agent.ps1" -Key "${publicKey}" -Port ${port} -Token "${token}" -Url "${getHubURL()}"${repoArg}`
 	)
 }
 

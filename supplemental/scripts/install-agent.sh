@@ -240,6 +240,7 @@ TOKEN=""
 HUB_URL=""
 AUTO_UPDATE_FLAG="" # empty string means prompt, "true" means auto-enable, "false" means skip
 VERSION="latest"
+REPO="" # owner/repo to install from (default: empty => upstream henrygd/beszel)
 
 # Check for help flag
 case "$1" in
@@ -257,6 +258,7 @@ case "$1" in
   printf "                          VALUE can be true (enable) or false (disable). If not specified, will prompt.\n"
   printf "  --mirror [URL]        : Use GitHub proxy to resolve network timeout issues in mainland China\n"
   printf "                          URL: optional custom proxy URL (default: https://gh.beszel.dev)\n"
+  printf "  --repo OWNER/REPO     : Install from a fork's GitHub releases instead of the upstream henrygd/beszel\n"
   printf "  -h, --help            : Display this help message\n"
   exit 0
   ;;
@@ -358,6 +360,14 @@ while [ $# -gt 0 ]; do
       AUTO_UPDATE_FLAG="true"
     fi
     ;;
+  --repo*)
+    if echo "$1" | grep -q "="; then
+      REPO=$(echo "$1" | cut -d'=' -f2)
+    else
+      shift
+      REPO="$1"
+    fi
+    ;;
   *)
     echo "Invalid option: $1" >&2
     exit 1
@@ -365,6 +375,25 @@ while [ $# -gt 0 ]; do
   esac
   shift
 done
+
+# Resolve the GitHub repo to download from. Defaults to the upstream repo so
+# upstream behavior is unchanged; a fork passes --repo owner/repo.
+if [ -z "$REPO" ]; then
+  REPO="henrygd/beszel"
+fi
+# When installing from a fork, persist AGENT_REPO so the agent's `update`
+# subcommand (run by the auto-update cron) pulls new versions from the fork
+# instead of the upstream repo. Empty for upstream installs (no behavior change).
+AGENT_REPO_ENV=""
+if [ "$REPO" != "henrygd/beszel" ]; then
+  AGENT_REPO_ENV="$REPO"
+fi
+# A ready-to-concatenate env snippet (with leading space) for the fork repo, or
+# empty for upstream installs so service/env files stay byte-identical to upstream.
+AGENT_REPO_ENV_SUFFIX=""
+if [ -n "$AGENT_REPO_ENV" ]; then
+  AGENT_REPO_ENV_SUFFIX=" AGENT_REPO=\"$AGENT_REPO_ENV\""
+fi
 
 # Set paths based on operating system
 if is_freebsd; then
@@ -649,10 +678,13 @@ fi
 
 # Determine version to install
 if [ "$VERSION" = "latest" ]; then
-  INSTALL_VERSION=$(curl -s "https://get.beszel.dev/latest-version")
+  # For the upstream repo, prefer the fast version endpoint, then fall back to
+  # the GitHub API. For a fork (--repo), go straight to its GitHub releases API.
+  if [ "$REPO" = "henrygd/beszel" ]; then
+    INSTALL_VERSION=$(curl -s "https://get.beszel.dev/latest-version")
+  fi
   if [ -z "$INSTALL_VERSION" ]; then
-    # Fallback to GitHub API
-    API_RELEASE_URL="https://api.github.com/repos/henrygd/beszel/releases/latest"
+    API_RELEASE_URL="https://api.github.com/repos/${REPO}/releases/latest"
     INSTALL_VERSION=$(curl -s "$API_RELEASE_URL" | grep -o '"tag_name": "v[^"]*"' | cut -d'"' -f4 | tr -d 'v')
   fi
   if [ -z "$INSTALL_VERSION" ]; then
@@ -670,7 +702,7 @@ echo "Downloading beszel-agent v${INSTALL_VERSION}..."
 # Download checksums file
 TEMP_DIR=$(mktemp -d)
 cd "$TEMP_DIR" || exit 1
-CHECKSUM=$(curl -fsSL "$GITHUB_URL/henrygd/beszel/releases/download/v${INSTALL_VERSION}/beszel_${INSTALL_VERSION}_checksums.txt" | grep "$FILE_NAME" | cut -d' ' -f1)
+CHECKSUM=$(curl -fsSL "$GITHUB_URL/${REPO}/releases/download/v${INSTALL_VERSION}/beszel_${INSTALL_VERSION}_checksums.txt" | grep "$FILE_NAME" | cut -d' ' -f1)
 if [ -z "$CHECKSUM" ] || ! echo "$CHECKSUM" | grep -qE "^[a-fA-F0-9]{64}$"; then
   echo "Failed to get checksum or invalid checksum format"
   echo "Try again with --mirror (or --mirror <url>) if GitHub is not reachable."
@@ -678,8 +710,8 @@ if [ -z "$CHECKSUM" ] || ! echo "$CHECKSUM" | grep -qE "^[a-fA-F0-9]{64}$"; then
   exit 1
 fi
 
-if ! curl -fL# --retry 3 --retry-delay 2 --connect-timeout 10 "$GITHUB_URL/henrygd/beszel/releases/download/v${INSTALL_VERSION}/$FILE_NAME" -o "$FILE_NAME"; then
-  echo "Failed to download the agent from $GITHUB_URL/henrygd/beszel/releases/download/v${INSTALL_VERSION}/$FILE_NAME"
+if ! curl -fL# --retry 3 --retry-delay 2 --connect-timeout 10 "$GITHUB_URL/${REPO}/releases/download/v${INSTALL_VERSION}/$FILE_NAME" -o "$FILE_NAME"; then
+  echo "Failed to download the agent from $GITHUB_URL/${REPO}/releases/download/v${INSTALL_VERSION}/$FILE_NAME"
   echo "Try again with --mirror (or --mirror <url>) if GitHub is not reachable."
   rm -rf "$TEMP_DIR"
   exit 1
@@ -765,6 +797,7 @@ export PORT="$PORT"
 export KEY="$KEY"
 export TOKEN="$TOKEN"
 export HUB_URL="$HUB_URL"
+if [ -n "$AGENT_REPO_ENV" ]; then export AGENT_REPO="$AGENT_REPO_ENV"; fi
 
 depend() {
     need net
@@ -835,7 +868,7 @@ start_service() {
     procd_set_param command $BIN_PATH
     procd_set_param user beszel
     procd_set_param pidfile /var/run/beszel-agent.pid
-    procd_set_param env PORT="$PORT" KEY="$KEY" TOKEN="$TOKEN" HUB_URL="$HUB_URL"
+    procd_set_param env PORT="$PORT" KEY="$KEY" TOKEN="$TOKEN" HUB_URL="$HUB_URL"$AGENT_REPO_ENV_SUFFIX
     procd_set_param respawn
     procd_set_param stdout 1
     procd_set_param stderr 1
@@ -908,6 +941,7 @@ KEY="$KEY"
 TOKEN=$TOKEN
 HUB_URL=$HUB_URL
 EOF
+    if [ -n "$AGENT_REPO_ENV" ]; then echo "AGENT_REPO=\"$AGENT_REPO_ENV\"" >> "$AGENT_DIR/env"; fi
     chmod 640 "$AGENT_DIR/env"
     chown "root:${AGENT_USER}" "$AGENT_DIR/env"
   else
@@ -976,6 +1010,12 @@ else
     # Detect NVIDIA devices and grant device permissions
     NVIDIA_DEVICES=$(detect_nvidia_devices)
 
+    # Conditionally emit an AGENT_REPO Environment= line for fork installs
+    SYSTEMD_AGENT_REPO_ENV=""
+    if [ -n "$AGENT_REPO_ENV" ]; then
+      SYSTEMD_AGENT_REPO_ENV="Environment=\"AGENT_REPO=$AGENT_REPO_ENV\""
+    fi
+
     cat >/etc/systemd/system/beszel-agent.service <<EOF
 [Unit]
 Description=Beszel Agent Service
@@ -987,6 +1027,7 @@ Environment="PORT=$PORT"
 Environment="KEY=$KEY"
 Environment="TOKEN=$TOKEN"
 Environment="HUB_URL=$HUB_URL"
+$SYSTEMD_AGENT_REPO_ENV
 # Environment="EXTRA_FILESYSTEMS=sdb"
 ExecStart=$BIN_PATH
 User=beszel

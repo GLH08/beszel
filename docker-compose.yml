@@ -18,6 +18,8 @@ services:
       # build from this fork's source, so default to the fork's prebuilt GHCR
       # agent image (with ping / processes support).
       AGENT_IMAGE: ${AGENT_IMAGE:-ghcr.io/glh08/beszel/beszel-agent:custom}
+      # GitHub repo (owner/repo) for binary installs + agent self-update (fork).
+      AGENT_REPO: ${AGENT_REPO:-glh08/beszel}
     ports:
       - "8090:8090"
     volumes:

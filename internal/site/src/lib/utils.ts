@@ -326,6 +326,9 @@ export const getHubURL = () => globalThis.BESZEL?.HUB_URL || window.location.ori
 /** Get the agent Docker image shown in add-system install snippets (overridable via hub AGENT_IMAGE env) */
 export const getAgentImage = () => globalThis.BESZEL?.AGENT_IMAGE || "henrygd/beszel-agent"
 
+/** Get the agent GitHub repo (owner/repo) for binary install + self-update, or "" for upstream */
+export const getAgentRepo = () => globalThis.BESZEL?.AGENT_REPO || ""
+
 /** Map of system IDs to their corresponding tokens (used to avoid fetching in add-system dialog) */
 export const tokenMap = new Map<SystemRecord["id"], FingerprintRecord["token"]>()
 
