@@ -247,6 +247,12 @@ func (sys *System) createRecords(data *system.CombinedData) (*core.Record, error
 		return nil
 	})
 
+	// accumulate monthly traffic and check quota (outside the transaction to
+	// avoid blocking on notification delivery)
+	if err == nil && len(data.Stats.NetworkInterfaces) > 0 {
+		sys.updateTrafficMonthly(systemRecord, data)
+	}
+
 	return systemRecord, err
 }
 

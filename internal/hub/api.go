@@ -127,6 +127,8 @@ func (h *Hub) registerApiRoutes(se *core.ServeEvent) error {
 	apiAuth.POST("/smart/refresh", h.refreshSmartData).BindFunc(excludeReadOnlyRole)
 	// get systemd service details
 	apiAuth.GET("/systemd/info", h.getSystemdInfo)
+	// get monthly traffic summary for a system
+	apiAuth.GET("/traffic", h.getTraffic)
 	// /containers routes
 	if enabled, _ := utils.GetEnv("CONTAINER_DETAILS"); enabled != "false" {
 		// get container logs
@@ -339,6 +341,24 @@ func (h *Hub) getContainerInfo(e *core.RequestEvent) error {
 	return h.containerRequestHandler(e, func(system *systems.System, containerID string) (string, error) {
 		return system.FetchContainerInfoFromAgent(containerID)
 	}, "info")
+}
+
+// getTraffic handles GET /api/beszel/traffic?system=<id> requests
+func (h *Hub) getTraffic(e *core.RequestEvent) error {
+	systemID := e.Request.URL.Query().Get("system")
+	if systemID == "" {
+		return e.BadRequestError("Invalid system parameter", nil)
+	}
+	sys, err := h.sm.GetSystem(systemID)
+	if err != nil || !sys.HasUser(e.App, e.Auth) {
+		return e.NotFoundError("", nil)
+	}
+	summary, err := sys.TrafficSummary()
+	if err != nil {
+		return e.InternalServerError("", err)
+	}
+	e.Response.Header().Set("Cache-Control", "public, max-age=30")
+	return e.JSON(http.StatusOK, summary)
 }
 
 // getSystemdInfo handles GET /api/beszel/systemd/info requests

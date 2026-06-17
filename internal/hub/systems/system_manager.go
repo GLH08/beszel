@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/henrygd/beszel/internal/alerts"
 	"github.com/henrygd/beszel/internal/hub/ws"
 
 	"github.com/henrygd/beszel/internal/entities/system"
@@ -55,6 +56,9 @@ type hubLike interface {
 	HandleSystemAlerts(systemRecord *core.Record, data *system.CombinedData) error
 	HandleStatusAlerts(status string, systemRecord *core.Record) error
 	CancelPendingStatusAlerts(systemID string)
+	// used by monthly traffic quota notifications
+	SendAlert(data alerts.AlertMessageData) error
+	MakeLink(parts ...string) string
 }
 
 // NewSystemManager creates a new SystemManager instance with the provided hub.
