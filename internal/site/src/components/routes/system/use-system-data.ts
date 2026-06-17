@@ -108,13 +108,17 @@ export function useSystemData(id: string) {
 			.then(setDetails)
 	}, [system.id])
 
-	// subscribe to realtime metrics if chart time is 1m
+	// subscribe to realtime metrics.
+	// The charts only use realtime data in the 1m view, but the Processes
+	// table is realtime-only, so the subscription runs regardless of chart
+	// time. Chart data is only updated for the 1m view.
 	useEffect(() => {
 		let unsub = () => {}
-		if (!system.id || chartTime !== "1m") {
+		if (!system.id || system.status !== SystemStatus.Up) {
 			return
 		}
-		if (system.status !== SystemStatus.Up || parseSemVer(system?.info?.v).minor < 13) {
+		// older agents don't support the realtime channel
+		if (parseSemVer(system?.info?.v).minor < 13) {
 			$chartTime.set("1h")
 			return
 		}
@@ -123,15 +127,20 @@ export function useSystemData(id: string) {
 			.subscribe(
 				`rt_metrics`,
 				(data: { container: ContainerStatsRecord[]; info: SystemInfo; stats: SystemStats; top?: Process[] }) => {
+					// top processes update regardless of chart time
+					if (data.top) {
+						setTopProcesses(data.top)
+					}
+					// chart data only updates in the 1m view
+					if (chartTime !== "1m") {
+						return
+					}
 					const now = Date.now()
 					const statsPoint = { created: now, stats: data.stats } as SystemStatsRecord
 					const containerPoint =
 						data.container?.length > 0
 							? makeContainerPoint(now, data.container as unknown as ContainerStatsRecord["stats"])
 							: null
-					if (data.top) {
-						setTopProcesses(data.top)
-					}
 					// on first message, make sure we clear out data from other time periods
 					if (isFirst) {
 						isFirst = false
@@ -152,7 +161,7 @@ export function useSystemData(id: string) {
 		return () => {
 			unsub?.()
 		}
-	}, [chartTime, system.id])
+	}, [chartTime, system.id, system.status, system?.info?.v])
 
 	const agentVersion = useMemo(() => parseSemVer(system?.info?.v), [system?.info?.v])
 
