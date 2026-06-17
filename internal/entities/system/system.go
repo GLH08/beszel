@@ -179,4 +179,7 @@ type CombinedData struct {
 	Containers      []*container.Stats `json:"container" cbor:"2,keyasint"`
 	SystemdServices []*systemd.Service `json:"systemd,omitempty" cbor:"3,keyasint,omitempty"`
 	Details         *Details           `cbor:"4,keyasint,omitempty"`
+	// TopProcesses is a snapshot of the most CPU-intensive processes.
+	// Not persisted to history — served only via the realtime channel.
+	TopProcesses []*Process `json:"top,omitempty" cbor:"5,keyasint,omitempty"`
 }

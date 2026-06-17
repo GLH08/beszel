@@ -48,6 +48,7 @@ type Agent struct {
 	keys                      []gossh.PublicKey                                     // SSH public keys
 	smartManager              *SmartManager                                         // Manages SMART data
 	systemdManager            *systemdManager                                       // Manages systemd services
+	processSampler            *processSampler                                       // Computes top-process CPU% snapshots
 }
 
 // NewAgent creates a new agent with the given data directory for persisting data.
@@ -143,6 +144,9 @@ func NewAgent(dataDir ...string) (agent *Agent, err error) {
 		slog.Debug("GPU", "err", err)
 	}
 
+	// initialize process sampler for top-process snapshots
+	agent.processSampler = newProcessSampler()
+
 	// if debugging, print stats
 	if agent.debug {
 		slog.Debug("Stats", "data", agent.gatherStats(common.DataRequestOptions{CacheTimeMs: defaultDataCacheTimeMs, IncludeDetails: true}))
@@ -159,6 +163,10 @@ func (a *Agent) gatherStats(options common.DataRequestOptions) *system.CombinedD
 	data, isCached := a.cache.Get(cacheTimeMs)
 	if isCached {
 		slog.Debug("Cached data", "cacheTimeMs", cacheTimeMs)
+		// top processes are computed fresh every realtime call (never cached)
+		if cacheTimeMs <= 1000 {
+			data.TopProcesses = a.processSampler.gatherTopProcesses()
+		}
 		return data
 	}
 
@@ -210,6 +218,11 @@ func (a *Agent) gatherStats(options common.DataRequestOptions) *system.CombinedD
 	slog.Debug("Extra FS", "data", data.Stats.ExtraFs)
 
 	a.cache.Set(data, cacheTimeMs)
+
+	// top processes are computed fresh on realtime requests (never cached/persisted)
+	if cacheTimeMs <= 1000 {
+		data.TopProcesses = a.processSampler.gatherTopProcesses()
+	}
 
 	return a.attachSystemDetails(data, cacheTimeMs, options.IncludeDetails)
 }
