@@ -169,11 +169,13 @@ func (a *Agent) gatherStats(options common.DataRequestOptions) *system.CombinedD
 	data, isCached := a.cache.Get(cacheTimeMs)
 	if isCached {
 		slog.Debug("Cached data", "cacheTimeMs", cacheTimeMs)
-		// top processes and ping results are computed fresh every realtime call (never cached)
+		// top processes is computed fresh every realtime call (never cached);
+		// it reads /proc so it is rate-limited to realtime requests.
 		if cacheTimeMs <= 1000 {
 			data.TopProcesses = a.processSampler.gatherTopProcesses()
-			data.PingResults = a.pingManager.sortedResults()
 		}
+		// ping results are an async snapshot (cheap), so always attach them.
+		data.PingResults = a.pingManager.sortedResults()
 		return data
 	}
 
@@ -226,11 +228,13 @@ func (a *Agent) gatherStats(options common.DataRequestOptions) *system.CombinedD
 
 	a.cache.Set(data, cacheTimeMs)
 
-	// top processes and ping results are computed fresh on realtime requests (never cached/persisted)
+	// top processes is computed fresh on realtime requests (never cached/persisted);
+	// it reads /proc so it is rate-limited to realtime requests.
 	if cacheTimeMs <= 1000 {
 		data.TopProcesses = a.processSampler.gatherTopProcesses()
-		data.PingResults = a.pingManager.sortedResults()
 	}
+	// ping results are an async snapshot (cheap), so always attach them.
+	data.PingResults = a.pingManager.sortedResults()
 
 	return a.attachSystemDetails(data, cacheTimeMs, options.IncludeDetails)
 }
