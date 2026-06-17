@@ -556,6 +556,10 @@ msgstr "누적 업로드"
 msgid "Current state"
 msgstr "현재 상태"
 
+#: src/components/traffic-card/traffic-card.tsx
+msgid "Cycle"
+msgstr ""
+
 #. Power Cycles
 #: src/components/routes/system/smart-table.tsx
 msgid "Cycles"
@@ -1080,6 +1084,10 @@ msgstr "Docker 컨테이너의 메모리 사용량"
 #: src/components/routes/system/smart-table.tsx
 msgid "Model"
 msgstr "모델"
+
+#: src/components/traffic-card/traffic-card.tsx
+msgid "Monthly Traffic"
+msgstr ""
 
 #: src/components/processes-table/processes-table.tsx
 msgid "Most CPU-intensive processes, updated live."
@@ -1730,6 +1738,20 @@ msgstr ""
 msgid "Total: {0}"
 msgstr "총: {0}"
 
+#: src/components/routes/system.tsx
+msgid "Traffic"
+msgstr ""
+
+#. Monthly traffic limit in GiB; 0 means unlimited
+#: src/components/add-system.tsx
+msgid "Traffic quota (GiB)"
+msgstr ""
+
+#. Day of month the traffic counter resets; 1 means natural month
+#: src/components/add-system.tsx
+msgid "Traffic reset day"
+msgstr ""
+
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Triggered by"
 msgstr "트리거 대상"
@@ -1809,6 +1831,7 @@ msgstr "알 수 없음"
 
 #: src/components/systemd-table/systemd-table.tsx
 #: src/components/systemd-table/systemd-table.tsx
+#: src/components/traffic-card/traffic-card.tsx
 msgid "Unlimited"
 msgstr "무제한"
 

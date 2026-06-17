@@ -556,6 +556,10 @@ msgstr "Kumulativno nalaganje"
 msgid "Current state"
 msgstr "Trenutno stanje"
 
+#: src/components/traffic-card/traffic-card.tsx
+msgid "Cycle"
+msgstr ""
+
 #. Power Cycles
 #: src/components/routes/system/smart-table.tsx
 msgid "Cycles"
@@ -1079,6 +1083,10 @@ msgstr "Poraba pomnilnika docker kontejnerjev"
 #. Device model
 #: src/components/routes/system/smart-table.tsx
 msgid "Model"
+msgstr ""
+
+#: src/components/traffic-card/traffic-card.tsx
+msgid "Monthly Traffic"
 msgstr ""
 
 #: src/components/processes-table/processes-table.tsx
@@ -1730,6 +1738,20 @@ msgstr ""
 msgid "Total: {0}"
 msgstr "Skupaj: {0}"
 
+#: src/components/routes/system.tsx
+msgid "Traffic"
+msgstr ""
+
+#. Monthly traffic limit in GiB; 0 means unlimited
+#: src/components/add-system.tsx
+msgid "Traffic quota (GiB)"
+msgstr ""
+
+#. Day of month the traffic counter resets; 1 means natural month
+#: src/components/add-system.tsx
+msgid "Traffic reset day"
+msgstr ""
+
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Triggered by"
 msgstr "Sproženo z"
@@ -1809,6 +1831,7 @@ msgstr "Neznana"
 
 #: src/components/systemd-table/systemd-table.tsx
 #: src/components/systemd-table/systemd-table.tsx
+#: src/components/traffic-card/traffic-card.tsx
 msgid "Unlimited"
 msgstr "Neomejeno"
 

@@ -556,6 +556,10 @@ msgstr "Kumulativ opplasting"
 msgid "Current state"
 msgstr "Nåværende tilstand"
 
+#: src/components/traffic-card/traffic-card.tsx
+msgid "Cycle"
+msgstr ""
+
 #. Power Cycles
 #: src/components/routes/system/smart-table.tsx
 msgid "Cycles"
@@ -1080,6 +1084,10 @@ msgstr "Minnebruk av docker-konteinere"
 #: src/components/routes/system/smart-table.tsx
 msgid "Model"
 msgstr "Modell"
+
+#: src/components/traffic-card/traffic-card.tsx
+msgid "Monthly Traffic"
+msgstr ""
 
 #: src/components/processes-table/processes-table.tsx
 msgid "Most CPU-intensive processes, updated live."
@@ -1730,6 +1738,20 @@ msgstr ""
 msgid "Total: {0}"
 msgstr "Totalt: {0}"
 
+#: src/components/routes/system.tsx
+msgid "Traffic"
+msgstr ""
+
+#. Monthly traffic limit in GiB; 0 means unlimited
+#: src/components/add-system.tsx
+msgid "Traffic quota (GiB)"
+msgstr ""
+
+#. Day of month the traffic counter resets; 1 means natural month
+#: src/components/add-system.tsx
+msgid "Traffic reset day"
+msgstr ""
+
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Triggered by"
 msgstr "Utløst av"
@@ -1809,6 +1831,7 @@ msgstr "Ukjent"
 
 #: src/components/systemd-table/systemd-table.tsx
 #: src/components/systemd-table/systemd-table.tsx
+#: src/components/traffic-card/traffic-card.tsx
 msgid "Unlimited"
 msgstr "Ubegrenset"
 
