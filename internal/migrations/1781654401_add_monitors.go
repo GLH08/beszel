@@ -36,6 +36,9 @@ func init() {
 			OnlyInt: true,
 		})
 		col.Fields.Add(&core.BoolField{Name: "enabled"})
+		// created/updated autodate fields — needed so the frontend can sort by "created"
+		col.Fields.Add(&core.AutodateField{Name: "created", OnCreate: true})
+		col.Fields.Add(&core.AutodateField{Name: "updated", OnCreate: true, OnUpdate: true})
 		col.AddIndex("idx_monitors_host_port", false, "`host`, `port`", "")
 		return app.Save(col)
 	}, func(app core.App) error {
