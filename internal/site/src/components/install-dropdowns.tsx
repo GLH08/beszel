@@ -6,20 +6,24 @@ import { DropdownMenuContent, DropdownMenuItem } from "./ui/dropdown-menu"
 // const isbeta = beszel.hub_version.includes("beta")
 // const imagetag = isbeta ? ":edge" : ""
 
+// Fork note: get.beszel.dev serves the *upstream* install script, which lacks
+// the fork's --repo / -Repo flags (causing "Invalid option: --repo"). When the
+// hub overrides the repo (AGENT_REPO set), download the fork's own script from
+// GitHub raw instead. The --repo-capable script lives on the fork's `custom`
+// branch (main tracks upstream only), so the ref is hardcoded to `custom`.
+const FORK_BRANCH = "custom"
+
 /**
- * Get the URL of the script to install the agent.
- * @param path - The path to the script (e.g. "/brew").
- * @returns The URL for the script.
+ * URL of the agent install script.
+ * @param file - filename under supplemental/scripts/ for the fork (e.g. "install-agent.sh")
+ * @param upstreamPath - path under get.beszel.dev for upstream (e.g. "" or "/brew")
  */
-const getScriptUrl = (path: string = "") => {
-	return `https://get.beszel.dev${path}`
-	// no beta for now
-	// const url = new URL("https://get.beszel.dev")
-	// url.pathname = path
-	// if (isBeta) {
-	// 	url.searchParams.set("beta", "1")
-	// }
-	// return url.toString()
+const getInstallScriptUrl = (file: string, upstreamPath: string = "") => {
+	const repo = getAgentRepo()
+	if (repo) {
+		return `https://raw.githubusercontent.com/${repo}/${FORK_BRANCH}/supplemental/scripts/${file}`
+	}
+	return `https://get.beszel.dev${upstreamPath}`
 }
 
 export function copyDockerCompose(port = "45876", publicKey: string, token: string) {
@@ -51,9 +55,10 @@ export function copyDockerRun(port = "45876", publicKey: string, token: string) 
 }
 
 export function copyLinuxCommand(port = "45876", publicKey: string, token: string, brew = false) {
-	let cmd = `curl -sL ${getScriptUrl(
-		brew ? "/brew" : ""
-	)} -o /tmp/install-agent.sh && chmod +x /tmp/install-agent.sh && /tmp/install-agent.sh -p ${port} -k "${publicKey}" -t "${token}" -url "${getHubURL()}"`
+	// brew: the fork publishes no homebrew tap, so always use the upstream brew
+	// script. For non-brew, a fork downloads its own install-agent.sh (with --repo).
+	const scriptUrl = brew ? getInstallScriptUrl("install-agent-brew.sh", "/brew") : getInstallScriptUrl("install-agent.sh")
+	let cmd = `curl -sL ${scriptUrl} -o /tmp/install-agent.sh && chmod +x /tmp/install-agent.sh && /tmp/install-agent.sh -p ${port} -k "${publicKey}" -t "${token}" -url "${getHubURL()}"`
 	// brew script does not support --china-mirrors
 	if (!brew && (i18n.locale + navigator.language).includes("zh-CN")) {
 		cmd += ` --china-mirrors`
@@ -70,7 +75,7 @@ export function copyWindowsCommand(port = "45876", publicKey: string, token: str
 	const repo = getAgentRepo()
 	const repoArg = repo ? ` -Repo ${repo}` : ""
 	copyToClipboard(
-		`& iwr -useb ${getScriptUrl()} -OutFile "$env:TEMP\\install-agent.ps1"; & Powershell -ExecutionPolicy Bypass -File "$env:TEMP\\install-agent.ps1" -Key "${publicKey}" -Port ${port} -Token "${token}" -Url "${getHubURL()}"${repoArg}`
+		`& iwr -useb ${getInstallScriptUrl("install-agent.ps1")} -OutFile "$env:TEMP\\install-agent.ps1"; & Powershell -ExecutionPolicy Bypass -File "$env:TEMP\\install-agent.ps1" -Key "${publicKey}" -Port ${port} -Token "${token}" -Url "${getHubURL()}"${repoArg}`
 	)
 }
 
