@@ -74,3 +74,30 @@ func TestComputeNetDelta(t *testing.T) {
 		})
 	}
 }
+
+// TestShouldWarnQuota covers the 80% early-warning threshold for monthly
+// traffic. The warning is one-shot per cycle (gated by the in-memory warned
+// flag) and only applies when a quota is set.
+func TestShouldWarnQuota(t *testing.T) {
+	const quota = uint64(100 * 1024 * 1024 * 1024) // 100 GiB
+	cases := []struct {
+		name       string
+		quotaBytes uint64
+		usedBytes  uint64
+		warned     bool
+		want       bool
+	}{
+		{"below 80% no warn", quota, 79 * 1024 * 1024 * 1024, false, false},
+		{"exactly 80% warns", quota, 80 * 1024 * 1024 * 1024, false, true},
+		{"above 80% warns", quota, 95 * 1024 * 1024 * 1024, false, true},
+		{"already warned no re-warn", quota, 95 * 1024 * 1024 * 1024, true, false},
+		{"unlimited (quota 0) no warn", 0, 999 * 1024 * 1024 * 1024, false, false},
+	}
+	for _, c := range cases {
+		t.Run(c.name, func(t *testing.T) {
+			if got := shouldWarnQuota(c.quotaBytes, c.usedBytes, c.warned); got != c.want {
+				t.Fatalf("shouldWarnQuota(%d, %d, %v) = %v, want %v", c.quotaBytes, c.usedBytes, c.warned, got, c.want)
+			}
+		})
+	}
+}

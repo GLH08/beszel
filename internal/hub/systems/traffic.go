@@ -12,6 +12,16 @@ import (
 
 const bytesPerGiB = 1024 * 1024 * 1024
 
+// trafficWarnFraction is the quota-usage fraction that triggers an early
+// warning (80%).
+const trafficWarnFraction = 0.8
+
+// shouldWarnQuota reports whether usage has crossed the early-warning
+// threshold (80% of quota) and a warning is still owed this cycle.
+func shouldWarnQuota(quotaBytes, usedBytes uint64, warned bool) bool {
+	return quotaBytes > 0 && !warned && float64(usedBytes) >= float64(quotaBytes)*trafficWarnFraction
+}
+
 // TrafficSummary is the per-system current billing-cycle traffic snapshot
 // returned by the /api/beszel/traffic endpoint.
 type TrafficSummary struct {
@@ -127,14 +137,52 @@ func (sys *System) updateTrafficMonthly(systemRecord *core.Record, data *system.
 	rec.Set("bytes_up", bytesUp)
 	rec.Set("bytes_down", bytesDown)
 
-	// quota check (GiB). 0 means unlimited.
-	if quotaBytes := uint64(quotaGiB) * bytesPerGiB; quotaBytes > 0 && !notified && (bytesUp+bytesDown) >= quotaBytes {
+	used := bytesUp + bytesDown
+	quotaBytes := uint64(quotaGiB) * bytesPerGiB
+
+	// 80% early warning: one-shot per cycle, tracked in memory on the system.
+	// Reset when the billing period changes.
+	if sys.trafficPeriod != period {
+		sys.trafficPeriod = period
+		sys.trafficWarned = false
+	}
+	if shouldWarnQuota(quotaBytes, used, sys.trafficWarned) {
+		sys.trafficWarned = true
+		sys.notifyQuotaWarning(systemRecord, quotaGiB, used, period)
+	}
+
+	// quota exceeded check (GiB). 0 means unlimited. `notified` is persisted so
+	// it does not re-fire after a hub restart.
+	if quotaBytes > 0 && !notified && used >= quotaBytes {
 		rec.Set("notified", true)
-		sys.notifyQuotaExceeded(systemRecord, quotaGiB, bytesUp+bytesDown, period)
+		sys.notifyQuotaExceeded(systemRecord, quotaGiB, used, period)
 	}
 
 	if saveErr := hub.SaveNoValidate(rec); saveErr != nil {
 		hub.Logger().Error("traffic_monthly: save", "err", saveErr)
+	}
+}
+
+// notifyQuotaWarning sends a one-shot early-warning notification when usage
+// approaches the quota (80%).
+func (sys *System) notifyQuotaWarning(systemRecord *core.Record, quotaGiB int, usedBytes uint64, period string) {
+	hub := sys.manager.hub
+	systemName := systemRecord.GetString("name")
+	usedGiB := float64(usedBytes) / bytesPerGiB
+	link := hub.MakeLink("system", sys.Id)
+	message := fmt.Sprintf(
+		"System %q has reached 80%% of its monthly traffic quota: %.1f GiB used of %d GiB (cycle starting %s).",
+		systemName, usedGiB, quotaGiB, period,
+	)
+	for _, userID := range systemRecord.GetStringSlice("users") {
+		_ = hub.SendAlert(alerts.AlertMessageData{
+			UserID:   userID,
+			SystemID: sys.Id,
+			Title:    "Traffic quota warning",
+			Message:  message,
+			Link:     link,
+			LinkText: "View system",
+		})
 	}
 }
 

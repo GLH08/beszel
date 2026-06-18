@@ -50,6 +50,8 @@ type System struct {
 	smartFetching  atomic.Bool             // True if SMART devices are currently being fetched
 	smartInterval  time.Duration           // Interval for periodic SMART data updates
 	lastNetIfaces  map[string][2]uint64    // per-NIC [lastSent, lastRecv] cumulative baseline for traffic deltas
+	trafficPeriod  string                  // current billing-cycle period key, for resetting the 80% warning flag
+	trafficWarned  bool                    // whether the 80% quota warning has fired this cycle
 }
 
 func (sm *SystemManager) NewSystem(systemId string) *System {
