@@ -329,6 +329,9 @@ export const getAgentImage = () => globalThis.BESZEL?.AGENT_IMAGE || "henrygd/be
 /** Get the agent GitHub repo (owner/repo) for binary install + self-update, or "" for upstream */
 export const getAgentRepo = () => globalThis.BESZEL?.AGENT_REPO || ""
 
+/** Get the GitHub proxy/mirror prefix for release-asset downloads, or "" for direct */
+export const getAgentMirror = () => globalThis.BESZEL?.AGENT_MIRROR || ""
+
 /** Map of system IDs to their corresponding tokens (used to avoid fetching in add-system dialog) */
 export const tokenMap = new Map<SystemRecord["id"], FingerprintRecord["token"]>()
 

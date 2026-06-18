@@ -9,6 +9,7 @@ declare global {
 		HUB_URL: string
 		AGENT_IMAGE: string
 		AGENT_REPO: string
+		AGENT_MIRROR: string
 		OAUTH_DISABLE_POPUP: boolean
 	}
 }

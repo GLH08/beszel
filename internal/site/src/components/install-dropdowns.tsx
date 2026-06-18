@@ -1,6 +1,6 @@
 import { i18n } from "@lingui/core"
 import { memo } from "react"
-import { copyToClipboard, getAgentImage, getAgentRepo, getHubURL } from "@/lib/utils"
+import { copyToClipboard, getAgentImage, getAgentMirror, getAgentRepo, getHubURL } from "@/lib/utils"
 import { DropdownMenuContent, DropdownMenuItem } from "./ui/dropdown-menu"
 
 // const isbeta = beszel.hub_version.includes("beta")
@@ -67,6 +67,15 @@ export function copyLinuxCommand(port = "45876", publicKey: string, token: strin
 	const repo = getAgentRepo()
 	if (!brew && repo) {
 		cmd += ` --repo ${repo}`
+	}
+	// proxy release-asset downloads through a GitHub mirror (forks in regions
+	// where release-assets.githubusercontent.com is blocked); only relevant for
+	// binary installs, which are the ones that hit github.com/releases/download.
+	if (!brew) {
+		const mirror = getAgentMirror()
+		if (mirror) {
+			cmd += ` --mirror ${mirror}`
+		}
 	}
 	copyToClipboard(cmd)
 }

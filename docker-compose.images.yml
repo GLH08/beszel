@@ -21,6 +21,10 @@ services:
       # GitHub repo (owner/repo) for binary installs + agent self-update. Points
       # at the fork so `curl` install and `beszel-agent update` pull fork releases.
       AGENT_REPO: ${AGENT_REPO:-glh08/beszel}
+      # GitHub proxy for binary-install release-asset downloads (forks: the
+      # upstream gh.beszel.dev proxy only serves henrygd repos). Override or
+      # empty out if your region can reach github.com directly.
+      AGENT_MIRROR: ${AGENT_MIRROR:-https://ghfast.top}
     ports:
       - "8090:8090"
     volumes:

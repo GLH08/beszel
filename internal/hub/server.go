@@ -16,6 +16,7 @@ type PublicAppInfo struct {
 	HUB_URL             string
 	AGENT_IMAGE         string
 	AGENT_REPO          string
+	AGENT_MIRROR        string
 	OAUTH_DISABLE_POPUP bool `json:"OAUTH_DISABLE_POPUP,omitempty"`
 }
 
@@ -44,12 +45,22 @@ func getPublicAppInfo(hub *Hub) PublicAppInfo {
 		// agent's self-update pull from a fork's GitHub releases instead of the
 		// upstream henrygd/beszel. Empty for upstream (no behavior change).
 		AGENT_REPO: "",
+		// AGENT_MIRROR prefixes github.com for release-asset downloads in the
+		// binary install snippet (passed as install-agent.sh --mirror). Needed by
+		// forks whose release assets (release-assets.githubusercontent.com) are
+		// blocked in some regions — upstream uses its own gh.beszel.dev proxy via
+		// the script's --china-mirrors flag, which only serves upstream repos.
+		// Empty for upstream (no behavior change).
+		AGENT_MIRROR: "",
 	}
 	if val, _ := utils.GetEnv("AGENT_IMAGE"); val != "" {
 		info.AGENT_IMAGE = val
 	}
 	if val, _ := utils.GetEnv("AGENT_REPO"); val != "" {
 		info.AGENT_REPO = val
+	}
+	if val, _ := utils.GetEnv("AGENT_MIRROR"); val != "" {
+		info.AGENT_MIRROR = val
 	}
 	if val, _ := utils.GetEnv("OAUTH_DISABLE_POPUP"); val == "true" {
 		info.OAUTH_DISABLE_POPUP = true
