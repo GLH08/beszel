@@ -14,8 +14,9 @@ import (
 const topProcessCount = 10
 
 // cmdDisplayLimit truncates the command line for display; the full value is
-// not sent over the wire to keep payloads small.
-const cmdDisplayLimit = 60
+// not sent over the wire to keep payloads small. 120 keeps payloads tiny
+// while showing enough of the command (paths/flags/ports) to identify it.
+const cmdDisplayLimit = 120
 
 // procSample holds the CPU time (user+system seconds) observed for a pid at a
 // given instant, used to compute per-process CPU% between two samples.
