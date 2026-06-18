@@ -49,7 +49,15 @@ export function LatencyChart({
 		return Array.from(ids).sort().join("\0")
 	}, [chartData.systemStats])
 
-	const sortedIds = targetIdsKey ? targetIdsKey.split("\0") : []
+	// Only render currently-configured targets. While the monitors list is still
+	// loading (nameById empty), fall back to the history-derived ids so the chart
+	// does not flash hidden. Once loaded, deleted targets (absent from nameById)
+	// stop rendering their stale historical line.
+	const sortedIds = useMemo(() => {
+		const histIds = targetIdsKey ? targetIdsKey.split("\0") : []
+		if (Object.keys(nameById).length === 0) return histIds
+		return histIds.filter((id) => id in nameById)
+	}, [targetIdsKey, nameById])
 
 	const dataPoints = useMemo(() => {
 		return sortedIds.map((id, i) => ({
