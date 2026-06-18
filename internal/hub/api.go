@@ -162,7 +162,9 @@ func (info *UpdateInfo) getUpdate(e *core.RequestEvent) error {
 		return e.JSON(http.StatusOK, info)
 	}
 	info.lastCheck = time.Now()
-	latestRelease, err := ghupdate.FetchLatestRelease(context.Background(), http.DefaultClient, "")
+	// Honor AGENT_REPO so a fork hub checks the fork's releases instead of
+	// upstream henrygd/beszel. Empty => FetchLatestRelease upstream default.
+	latestRelease, err := ghupdate.FetchLatestRelease(context.Background(), http.DefaultClient, updateApiURL())
 	if err != nil {
 		return err
 	}

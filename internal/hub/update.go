@@ -107,3 +107,15 @@ func ghRepoField(index int) string {
 	}
 	return ""
 }
+
+// updateApiURL returns the GitHub releases API URL to check for hub updates.
+// When AGENT_REPO is set to a valid "owner/repo", the badge checks the fork's
+// releases; otherwise it returns "" so ghupdate.FetchLatestRelease uses its
+// built-in upstream default (henrygd/beszel), leaving upstream behavior intact.
+func updateApiURL() string {
+	owner, repo := ghRepoField(0), ghRepoField(1)
+	if owner == "" || repo == "" {
+		return ""
+	}
+	return fmt.Sprintf("https://api.github.com/repos/%s/%s/releases/latest", owner, repo)
+}
