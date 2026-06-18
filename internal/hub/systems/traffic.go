@@ -39,14 +39,43 @@ func trafficPeriod(t time.Time, resetDay int) string {
 	return fmt.Sprintf("%04d-%02d-%02d", y, int(m), resetDay)
 }
 
-// sumNetBytes totals the cumulative sent/recv bytes across all reported network
-// interfaces (Stats.NetworkInterfaces index 2 = sent, 3 = recv).
-func sumNetBytes(stats *system.Stats) (sent, recv uint64) {
-	for _, ni := range stats.NetworkInterfaces {
-		sent += ni[2]
-		recv += ni[3]
+// computeNetDelta computes per-interface byte deltas from cumulative counters,
+// handling per-interface counter resets and newly-appeared/removed interfaces.
+// Returns the summed deltas and the updated baseline. A newly-appearing
+// interface is seeded (no delta this cycle) so its full since-boot total is
+// not attributed as fresh traffic. A disappeared interface is dropped from the
+// baseline. On a per-interface counter reset (reboot), the new smaller value
+// is taken as the delta.
+func computeNetDelta(current map[string][4]uint64, last map[string][2]uint64) (deltaSent, deltaRecv uint64, updated map[string][2]uint64) {
+	if last == nil {
+		last = map[string][2]uint64{}
 	}
-	return sent, recv
+	for name, ni := range current {
+		curSent, curRecv := ni[2], ni[3]
+		prev, ok := last[name]
+		if !ok {
+			// newly appeared: seed baseline, skip delta this cycle
+			last[name] = [2]uint64{curSent, curRecv}
+			continue
+		}
+		if curSent >= prev[0] {
+			deltaSent += curSent - prev[0]
+		} else {
+			deltaSent += curSent // counter reset / reboot
+		}
+		if curRecv >= prev[1] {
+			deltaRecv += curRecv - prev[1]
+		} else {
+			deltaRecv += curRecv
+		}
+		last[name] = [2]uint64{curSent, curRecv}
+	}
+	for name := range last {
+		if _, ok := current[name]; !ok {
+			delete(last, name) // interface disappeared
+		}
+	}
+	return deltaSent, deltaRecv, last
 }
 
 // updateTrafficMonthly accumulates per-billing-cycle traffic for the system from
@@ -61,15 +90,23 @@ func (sys *System) updateTrafficMonthly(systemRecord *core.Record, data *system.
 	quotaGiB := systemRecord.GetInt("traffic_quota")
 	period := trafficPeriod(now, resetDay)
 
-	currentSent, currentRecv := sumNetBytes(&data.Stats)
+	// Per-interface delta from cumulative counters (in-memory baseline). This is
+	// correct under per-interface counter resets, NIC add/remove — the previous
+	// sum-then-compare approach overcounted in those cases.
+	deltaSent, deltaRecv, lastIfaces := computeNetDelta(data.Stats.NetworkInterfaces, sys.lastNetIfaces)
+	sys.lastNetIfaces = lastIfaces
+	if deltaSent == 0 && deltaRecv == 0 {
+		// nothing to accumulate this cycle (also covers the first call, where
+		// every interface is seeded with no delta)
+		return
+	}
 
 	rec, err := hub.FindFirstRecordByFilter("traffic_monthly",
 		"system = {:system} && period = {:period}",
 		dbx.Params{"system": sys.Id, "period": period},
 	)
 	if err != nil {
-		// no row yet for this period: seed the baseline without counting a delta
-		// (avoids attributing the full since-boot cumulative total to the period)
+		// no row yet for this period: create one seeded at zero
 		col, colErr := hub.FindCachedCollectionByNameOrId("traffic_monthly")
 		if colErr != nil {
 			hub.Logger().Error("traffic_monthly: find collection", "err", colErr)
@@ -80,29 +117,7 @@ func (sys *System) updateTrafficMonthly(systemRecord *core.Record, data *system.
 		rec.Set("period", period)
 		rec.Set("bytes_up", 0)
 		rec.Set("bytes_down", 0)
-		rec.Set("last_up", currentSent)
-		rec.Set("last_down", currentRecv)
 		rec.Set("notified", false)
-		if saveErr := hub.SaveNoValidate(rec); saveErr != nil {
-			hub.Logger().Error("traffic_monthly: seed save", "err", saveErr)
-		}
-		return
-	}
-
-	lastSent := uint64(rec.GetInt("last_up"))
-	lastRecv := uint64(rec.GetInt("last_down"))
-
-	// counter reset / reboot: if current < last, treat current as the delta
-	var deltaSent, deltaRecv uint64
-	if currentSent >= lastSent {
-		deltaSent = currentSent - lastSent
-	} else {
-		deltaSent = currentSent
-	}
-	if currentRecv >= lastRecv {
-		deltaRecv = currentRecv - lastRecv
-	} else {
-		deltaRecv = currentRecv
 	}
 
 	bytesUp := uint64(rec.GetInt("bytes_up")) + deltaSent
@@ -111,8 +126,6 @@ func (sys *System) updateTrafficMonthly(systemRecord *core.Record, data *system.
 
 	rec.Set("bytes_up", bytesUp)
 	rec.Set("bytes_down", bytesDown)
-	rec.Set("last_up", currentSent)
-	rec.Set("last_down", currentRecv)
 
 	// quota check (GiB). 0 means unlimited.
 	if quotaBytes := uint64(quotaGiB) * bytesPerGiB; quotaBytes > 0 && !notified && (bytesUp+bytesDown) >= quotaBytes {

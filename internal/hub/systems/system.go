@@ -49,6 +49,7 @@ type System struct {
 	detailsFetched atomic.Bool             // True if static system details have been fetched and saved
 	smartFetching  atomic.Bool             // True if SMART devices are currently being fetched
 	smartInterval  time.Duration           // Interval for periodic SMART data updates
+	lastNetIfaces  map[string][2]uint64    // per-NIC [lastSent, lastRecv] cumulative baseline for traffic deltas
 }
 
 func (sm *SystemManager) NewSystem(systemId string) *System {
