@@ -5,7 +5,9 @@ import (
 	"bytes"
 	"compress/gzip"
 	"os"
+	"os/exec"
 	"path/filepath"
+	"runtime"
 	"testing"
 )
 
@@ -129,4 +131,30 @@ func TestParseChecksumLine(t *testing.T) {
 			t.Errorf("parseChecksumLine(%q) = %q, want %q", c.file, got, c.want)
 		}
 	}
+}
+
+// TestSmokeTestBinary asserts a non-existent path errors, and a real runnable
+// binary succeeds.
+func TestSmokeTestBinary(t *testing.T) {
+	t.Run("missing path errors", func(t *testing.T) {
+		if err := smokeTestBinary(filepath.Join(t.TempDir(), "nope")); err == nil {
+			t.Fatal("expected error for missing binary, got nil")
+		}
+	})
+
+	t.Run("real executable succeeds", func(t *testing.T) {
+		bin := "true"
+		if runtime.GOOS == "windows" {
+			bin = "cmd"
+		}
+		p, err := exec.LookPath(bin)
+		if err != nil {
+			t.Skipf("lookup %s: %v", bin, err)
+		}
+		// smokeTestBinary runs "<path> --version"; `true`/`cmd` ignore unknown
+		// args and exit 0, so this is a valid "binary runs" signal.
+		if err := smokeTestBinary(p); err != nil {
+			t.Fatalf("expected nil for runnable binary, got %v", err)
+		}
+	})
 }

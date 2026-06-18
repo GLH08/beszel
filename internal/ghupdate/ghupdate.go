@@ -188,6 +188,13 @@ func (p *updater) update() (updated bool, err error) {
 		}
 	}
 
+	// Smoke-test the extracted binary before swapping it in. A corrupt or
+	// wrong-arch binary would otherwise replace a working service. On failure
+	// abort: the old binary is untouched (the rename below is not reached).
+	if err := smokeTestBinary(newExec); err != nil {
+		return false, fmt.Errorf("refusing to install unrunnable binary: %w", err)
+	}
+
 	// rename the current executable
 	if err := os.Rename(oldExec, renamedOldExec); err != nil {
 		return false, fmt.Errorf("failed to rename the current executable: %w", err)
@@ -369,6 +376,20 @@ func verifyAssetChecksum(config Config, rel *release, asset *releaseAsset) error
 	}
 	if got != want {
 		return fmt.Errorf("checksum mismatch for %s: got %s, want %s", asset.Name, got, want)
+	}
+	return nil
+}
+
+// smokeTestBinary runs "<path> --version" and returns nil only if it exits 0.
+// Both beszel (cobra RootCmd.Version) and beszel-agent (-v) support --version
+// with no side effects. This catches corrupt/wrong-arch/unrunnable binaries
+// before they replace a working service.
+func smokeTestBinary(path string) error {
+	cmd := exec.Command(path, "--version")
+	cmd.Stdout = nil
+	cmd.Stderr = nil
+	if err := cmd.Run(); err != nil {
+		return fmt.Errorf("smoke test (%s --version) failed: %w", path, err)
 	}
 	return nil
 }
