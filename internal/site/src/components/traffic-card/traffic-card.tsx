@@ -68,7 +68,7 @@ export function TrafficCard({ systemId }: { systemId: string }) {
 			.subscribe(
 				`rt_metrics`,
 				(data: { stats: { b?: [number, number] } }) => {
-					if (active && data.stats?.b) setRate(data.stats.b)
+					if (active) setRate(data.stats?.b ?? [0, 0])
 				},
 				{ query: { system: systemId } }
 			)
