@@ -29,6 +29,10 @@ func Update(cmd *cobra.Command, _ []string) {
 		log.Fatal(err)
 	}
 
+	if agentRepoMalformed() {
+		fmt.Fprintf(os.Stderr, "Warning: AGENT_REPO=%q is not in 'owner/repo' form; ignoring and self-updating from upstream henrygd/beszel.\n", os.Getenv("AGENT_REPO"))
+	}
+
 	updated, err := ghupdate.Update(ghupdate.Config{
 		ArchiveExecutable: "beszel",
 		DataDir:           dataDir,
@@ -106,6 +110,14 @@ func ghRepoField(index int) string {
 		return parts[index]
 	}
 	return ""
+}
+
+// agentRepoMalformed reports whether AGENT_REPO is set but lacks the
+// "owner/repo" slash, in which case the resolvers silently fall back to the
+// upstream henrygd/beszel — almost certainly not what the operator intended.
+func agentRepoMalformed() bool {
+	v := os.Getenv("AGENT_REPO")
+	return v != "" && !strings.Contains(v, "/")
 }
 
 // updateApiURL returns the GitHub releases API URL to check for hub updates.

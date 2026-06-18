@@ -1,6 +1,7 @@
 package agent
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"os/exec"
@@ -79,6 +80,10 @@ func detectRestarter() restarter {
 // fixes SELinux context if needed, and restarts the service.
 func Update(useMirror bool) error {
 	exePath, _ := os.Executable()
+
+	if v := os.Getenv("AGENT_REPO"); v != "" && !strings.Contains(v, "/") {
+		fmt.Fprintf(os.Stderr, "Warning: AGENT_REPO=%q is not in 'owner/repo' form; ignoring and self-updating from upstream henrygd/beszel.\n", v)
+	}
 
 	dataDir, err := GetDataDir()
 	if err != nil {

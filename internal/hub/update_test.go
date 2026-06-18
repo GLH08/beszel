@@ -39,3 +39,25 @@ func TestUpdateApiURL(t *testing.T) {
 		}
 	})
 }
+
+// TestAgentRepoMalformed reports whether AGENT_REPO is set but has no owner/repo
+// slash — in which case the resolvers silently fall back to upstream.
+func TestAgentRepoMalformed(t *testing.T) {
+	orig := os.Getenv("AGENT_REPO")
+	t.Cleanup(func() { os.Setenv("AGENT_REPO", orig) })
+
+	os.Unsetenv("AGENT_REPO")
+	if agentRepoMalformed() {
+		t.Fatal("unset AGENT_REPO should not be malformed")
+	}
+
+	os.Setenv("AGENT_REPO", "glh08")
+	if !agentRepoMalformed() {
+		t.Fatal("AGENT_REPO without slash should be malformed")
+	}
+
+	os.Setenv("AGENT_REPO", "glh08/beszel")
+	if agentRepoMalformed() {
+		t.Fatal("AGENT_REPO with slash should not be malformed")
+	}
+}
