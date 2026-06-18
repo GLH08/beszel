@@ -11,6 +11,17 @@ import (
 	"strings"
 )
 
+// sanitizeExtractPath joins name onto destDir and rejects paths that escape
+// destDir (Zip Slip / Tar Slip). Returns the cleaned path.
+func sanitizeExtractPath(destDir, name string) (string, error) {
+	destDir = filepath.Clean(destDir) + string(os.PathSeparator)
+	path := filepath.Join(destDir, name)
+	if !strings.HasPrefix(path, destDir) {
+		return "", fmt.Errorf("invalid file path: %s", name)
+	}
+	return path, nil
+}
+
 // extract extracts an archive file to the destination directory.
 // Supports .zip and .tar.gz files based on the file extension.
 func extract(srcPath, destDir string) error {
@@ -47,17 +58,25 @@ func extractTarGz(srcPath, destDir string) error {
 		}
 
 		if header.Typeflag == tar.TypeDir {
-			if err := os.MkdirAll(filepath.Join(destDir, header.Name), 0755); err != nil {
+			dirPath, err := sanitizeExtractPath(destDir, header.Name)
+			if err != nil {
+				return err
+			}
+			if err := os.MkdirAll(dirPath, 0755); err != nil {
 				return err
 			}
 			continue
 		}
 
-		if err := os.MkdirAll(filepath.Dir(filepath.Join(destDir, header.Name)), 0755); err != nil {
+		filePath, err := sanitizeExtractPath(destDir, header.Name)
+		if err != nil {
+			return err
+		}
+		if err := os.MkdirAll(filepath.Dir(filePath), 0755); err != nil {
 			return err
 		}
 
-		outFile, err := os.Create(filepath.Join(destDir, header.Name))
+		outFile, err := os.Create(filePath)
 		if err != nil {
 			return err
 		}

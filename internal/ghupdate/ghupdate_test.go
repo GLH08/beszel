@@ -1,6 +1,10 @@
 package ghupdate
 
 import (
+	"archive/tar"
+	"bytes"
+	"compress/gzip"
+	"os"
 	"path/filepath"
 	"testing"
 )
@@ -67,4 +71,46 @@ func TestExtractFailure(t *testing.T) {
 	if err := extract(missingTarPath, extractedPath); err == nil {
 		t.Fatal("Expected Extract to fail due to missing tar.gz file")
 	}
+}
+
+// TestExtractTarGzRejectsPathTraversal builds a tar.gz with a "../escape"
+// entry and asserts extractTarGz rejects it (Tar Slip). A clean tar.gz must
+// still extract.
+func TestExtractTarGzRejectsPathTraversal(t *testing.T) {
+	writeTar := func(name string) []byte {
+		var buf bytes.Buffer
+		gz := gzip.NewWriter(&buf)
+		tw := tar.NewWriter(gz)
+		_ = tw.WriteHeader(&tar.Header{Name: name, Mode: 0644, Size: int64(len("x")), Typeflag: tar.TypeReg})
+		_, _ = tw.Write([]byte("x"))
+		_ = tw.Close()
+		_ = gz.Close()
+		return buf.Bytes()
+	}
+
+	t.Run("rejects traversal entry", func(t *testing.T) {
+		dir := t.TempDir()
+		src := filepath.Join(dir, "bad.tar.gz")
+		if err := os.WriteFile(src, writeTar("../escape.txt"), 0644); err != nil {
+			t.Fatal(err)
+		}
+		if err := extractTarGz(src, filepath.Join(dir, "out")); err == nil {
+			t.Fatal("expected error for path-traversal entry, got nil")
+		}
+	})
+
+	t.Run("clean tar extracts", func(t *testing.T) {
+		dir := t.TempDir()
+		src := filepath.Join(dir, "good.tar.gz")
+		if err := os.WriteFile(src, writeTar("good.txt"), 0644); err != nil {
+			t.Fatal(err)
+		}
+		out := filepath.Join(dir, "out")
+		if err := extractTarGz(src, out); err != nil {
+			t.Fatalf("expected clean extract, got %v", err)
+		}
+		if _, err := os.Stat(filepath.Join(out, "good.txt")); err != nil {
+			t.Fatalf("expected good.txt to exist: %v", err)
+		}
+	})
 }
