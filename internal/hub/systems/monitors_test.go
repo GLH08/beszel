@@ -3,7 +3,9 @@
 package systems_test
 
 import (
+	"io"
 	"net/http"
+	"strings"
 	"testing"
 
 	"github.com/henrygd/beszel/internal/tests"
@@ -83,4 +85,45 @@ func TestMonitorsListSortCreated(t *testing.T) {
 		}
 		s.Test(t)
 	})
+}
+
+// TestMonitorsUniqueHostPort verifies the (host, port) unique index (migration
+// 1781654404) rejects a duplicate target. The first create succeeds; the second
+// with the same host:port fails.
+func TestMonitorsUniqueHostPort(t *testing.T) {
+	hub, user := tests.GetHubWithUser(t)
+	defer hub.Cleanup()
+
+	userToken, err := user.NewAuthToken()
+	require.NoError(t, err)
+
+	testAppFactory := func(t testing.TB) *pbTests.TestApp { return hub.TestApp }
+	body := strings.NewReader(`{"name":"dup","host":"1.2.3.4","port":443}`)
+
+	first := tests.ApiScenario{
+		Name:            "first create ok",
+		Method:          http.MethodPost,
+		URL:             "/api/collections/monitors/records",
+		Headers:         map[string]string{"Authorization": userToken},
+		Body:            body,
+		ExpectedStatus:  200,
+		ExpectedContent: []string{"1.2.3.4"},
+		TestAppFactory:  testAppFactory,
+	}
+	first.Test(t)
+
+	// reset the reader for the second request
+	body.Seek(0, io.SeekStart)
+
+	second := tests.ApiScenario{
+		Name:            "duplicate rejected",
+		Method:          http.MethodPost,
+		URL:             "/api/collections/monitors/records",
+		Headers:         map[string]string{"Authorization": userToken},
+		Body:            body,
+		ExpectedStatus:  400,
+		ExpectedContent: []string{"validation_not_unique"},
+		TestAppFactory:  testAppFactory,
+	}
+	second.Test(t)
 }

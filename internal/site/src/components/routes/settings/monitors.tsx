@@ -52,11 +52,16 @@ export default function MonitorsSettings() {
 		e.preventDefault()
 		const form = new FormData(e.target as HTMLFormElement)
 		const data = Object.fromEntries(form)
+		const port = Number(data.port) || 443
+		if (monitors.some((m) => m.host === data.host && m.port === port)) {
+			toast({ title: "Duplicate target", description: "That host and port already exist.", variant: "destructive" })
+			return
+		}
 		try {
 			await pb.collection("monitors").create({
 				name: data.name,
 				host: data.host,
-				port: Number(data.port) || 443,
+				port,
 				enabled: true,
 			})
 			;(e.target as HTMLFormElement).reset()
