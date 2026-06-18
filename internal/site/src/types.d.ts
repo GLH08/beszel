@@ -245,7 +245,8 @@ export interface Process {
 	m: number
 }
 
-/** Latency-test result for a single ping target (realtime only, not persisted). */
+/** Latency-test result for a single ping target. Carried in the realtime
+ * payload (CombinedData.PingResults) and persisted in stats.p. */
 export interface PingResult {
 	/** target id */
 	id: string

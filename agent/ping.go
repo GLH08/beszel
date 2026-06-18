@@ -150,7 +150,7 @@ func (pm *pingManager) probeAll(ctx context.Context) {
 				last = r.latency
 			}
 		}
-		// use the last successful sample as the "current" latency
+		// "current" latency is the last probe's latency, or 0 if the last probe failed
 		current := last
 		if !s[len(s)-1].ok {
 			current = 0

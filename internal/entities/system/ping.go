@@ -1,8 +1,8 @@
 package system
 
 // PingResult is the latency-test outcome for a single ping target, reported by
-// the agent. It is carried in CombinedData and served via the realtime channel;
-// it is not persisted to history.
+// the agent. It is carried in CombinedData.PingResults (realtime channel) and
+// also persisted in Stats.Pings (rolled up with the standard record tiers).
 type PingResult struct {
 	// Id is the target identifier assigned by the hub.
 	Id string `json:"id" cbor:"0,keyasint"`
