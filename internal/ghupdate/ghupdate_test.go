@@ -114,3 +114,19 @@ func TestExtractTarGzRejectsPathTraversal(t *testing.T) {
 		}
 	})
 }
+
+// TestParseChecksumLine extracts the hex digest for a file from a goreleaser
+// checksums file body (lines: "<sha256>  <fileName>").
+func TestParseChecksumLine(t *testing.T) {
+	body := "abc123  beszel_linux_amd64.tar.gz\ndef456  beszel-agent_linux_amd64.tar.gz\n"
+	cases := []struct{ file, want string }{
+		{"beszel-agent_linux_amd64.tar.gz", "def456"},
+		{"beszel_linux_amd64.tar.gz", "abc123"},
+		{"missing.tar.gz", ""},
+	}
+	for _, c := range cases {
+		if got := parseChecksumLine(body, c.file); got != c.want {
+			t.Errorf("parseChecksumLine(%q) = %q, want %q", c.file, got, c.want)
+		}
+	}
+}

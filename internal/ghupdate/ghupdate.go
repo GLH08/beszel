@@ -5,6 +5,8 @@ package ghupdate
 
 import (
 	"context"
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -148,6 +150,14 @@ func (p *updater) update() (updated bool, err error) {
 	assetPath := filepath.Join(releaseDir, asset.Name)
 	if err := downloadFile(p.config.Context, p.config.HttpClient, asset.DownloadUrl, assetPath, useMirror); err != nil {
 		return false, err
+	}
+
+	// Verify the downloaded asset against the release's checksums file (same
+	// trust model as the install scripts: GitHub+TLS). Abort on mismatch so the
+	// good binary is never replaced.
+	ColorPrintf(ColorYellow, "Verifying %s...", asset.Name)
+	if err := verifyAssetChecksum(p.config, latest, asset); err != nil {
+		return false, fmt.Errorf("checksum verification failed: %w", err)
 	}
 
 	ColorPrintf(ColorYellow, "Extracting %s...", asset.Name)
@@ -301,6 +311,65 @@ func downloadFile(
 		return err
 	}
 
+	return nil
+}
+
+// parseChecksumLine extracts the hex digest for fileName from a goreleaser
+// checksums file body (one "<sha256>  <fileName>" per line). Returns "" if
+// fileName is not present.
+func parseChecksumLine(body, fileName string) string {
+	for _, line := range strings.Split(body, "\n") {
+		parts := strings.Fields(line)
+		if len(parts) == 2 && parts[1] == fileName {
+			return parts[0]
+		}
+	}
+	return ""
+}
+
+// sha256File returns the lowercase hex SHA256 of the file at path.
+func sha256File(path string) (string, error) {
+	f, err := os.Open(path)
+	if err != nil {
+		return "", err
+	}
+	defer f.Close()
+	h := sha256.New()
+	if _, err := io.Copy(h, f); err != nil {
+		return "", err
+	}
+	return hex.EncodeToString(h.Sum(nil)), nil
+}
+
+// verifyAssetChecksum downloads the release's checksums file and confirms the
+// asset's SHA256 matches. The checksums file is named
+// beszel_<version>_checksums.txt (goreleaser default) and lives in the same
+// release download directory as the asset. Same GitHub+TLS trust model as the
+// install scripts.
+func verifyAssetChecksum(config Config, rel *release, asset *releaseAsset) error {
+	tag := strings.TrimPrefix(rel.Tag, "v")
+	checksumsName := fmt.Sprintf("beszel_%s_checksums.txt", tag)
+	checksumsURL := strings.TrimSuffix(asset.DownloadUrl, asset.Name) + checksumsName
+	checksumsPath := filepath.Join(config.DataDir, ".beszel_update", checksumsName)
+	if err := downloadFile(config.Context, config.HttpClient, checksumsURL, checksumsPath, false); err != nil {
+		return fmt.Errorf("download checksums file: %w", err)
+	}
+	body, err := os.ReadFile(checksumsPath)
+	if err != nil {
+		return err
+	}
+	want := parseChecksumLine(string(body), asset.Name)
+	if want == "" {
+		return fmt.Errorf("no checksum entry for %s", asset.Name)
+	}
+	assetPath := filepath.Join(config.DataDir, ".beszel_update", asset.Name)
+	got, err := sha256File(assetPath)
+	if err != nil {
+		return err
+	}
+	if got != want {
+		return fmt.Errorf("checksum mismatch for %s: got %s, want %s", asset.Name, got, want)
+	}
 	return nil
 }
 
