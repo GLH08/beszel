@@ -111,8 +111,12 @@ func (p *updater) update() (updated bool, err error) {
 
 	var latest *release
 
-	apiURL := getApiURL(p.config.UseMirror, p.config.Owner, p.config.Repo)
-	if p.config.UseMirror {
+	useMirror := shouldUseMirror(p.config.UseMirror, p.config.Owner, p.config.Repo)
+	if p.config.UseMirror && !useMirror {
+		ColorPrint(ColorYellow, "Ignoring --china-mirrors for fork repo; using direct GitHub connection. Set HTTPS_PROXY if a proxy is needed.")
+	}
+	apiURL := getApiURL(useMirror, p.config.Owner, p.config.Repo)
+	if useMirror {
 		ColorPrint(ColorYellow, "Using mirror for update.")
 	}
 
@@ -142,7 +146,7 @@ func (p *updater) update() (updated bool, err error) {
 
 	// download the release asset
 	assetPath := filepath.Join(releaseDir, asset.Name)
-	if err := downloadFile(p.config.Context, p.config.HttpClient, asset.DownloadUrl, assetPath, p.config.UseMirror); err != nil {
+	if err := downloadFile(p.config.Context, p.config.HttpClient, asset.DownloadUrl, assetPath, useMirror); err != nil {
 		return false, err
 	}
 
@@ -373,4 +377,18 @@ func getApiURL(useMirror bool, owner, repo string) string {
 		return fmt.Sprintf("https://gh.beszel.dev/repos/%s/%s/releases/latest?api=true", owner, repo)
 	}
 	return fmt.Sprintf("https://api.github.com/repos/%s/%s/releases/latest", owner, repo)
+}
+
+// shouldUseMirror decides whether the gh.beszel.dev mirror may be used for a
+// self-update. The mirror proxies only the upstream henrygd/beszel repo; using
+// it for any fork 403s on both the API call and the asset download. For forks
+// the mirror flag is defused and the update runs over a direct GitHub
+// connection (operators behind a restricted network set HTTPS_PROXY instead).
+// An empty owner is treated as non-upstream because update() defaults it to
+// "henrygd" only after this guard runs conservatively on the raw config.
+func shouldUseMirror(useMirror bool, owner, repo string) bool {
+	if !useMirror {
+		return false
+	}
+	return owner == "henrygd" && repo == "beszel"
 }
