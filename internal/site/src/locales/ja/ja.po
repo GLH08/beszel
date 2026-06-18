@@ -983,6 +983,10 @@ msgstr "言語"
 msgid "Latency"
 msgstr ""
 
+#: src/components/routes/settings/monitors.tsx
+msgid "Latency is measured via a TCP connection to the configured port, not ICMP. A host that is reachable but has the port closed or filtered will show 100% loss."
+msgstr ""
+
 #: src/components/systems-table/systems-table.tsx
 msgid "Layout"
 msgstr "レイアウト"
