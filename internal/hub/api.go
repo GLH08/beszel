@@ -129,6 +129,7 @@ func (h *Hub) registerApiRoutes(se *core.ServeEvent) error {
 	apiAuth.GET("/systemd/info", h.getSystemdInfo)
 	// get monthly traffic summary for a system
 	apiAuth.GET("/traffic", h.getTraffic)
+	apiAuth.GET("/traffic/all", h.getTrafficAll)
 	// /containers routes
 	if enabled, _ := utils.GetEnv("CONTAINER_DETAILS"); enabled != "false" {
 		// get container logs
@@ -361,6 +362,18 @@ func (h *Hub) getTraffic(e *core.RequestEvent) error {
 	}
 	e.Response.Header().Set("Cache-Control", "public, max-age=30")
 	return e.JSON(http.StatusOK, summary)
+}
+
+// getTrafficAll handles GET /api/beszel/traffic/all — returns a map of
+// systemId -> TrafficSummary for every system the calling user can see. Used by
+// the home page Monthly Traffic column to fetch all summaries in one request.
+func (h *Hub) getTrafficAll(e *core.RequestEvent) error {
+	summaries, err := h.sm.TrafficSummariesForUser(e.App, e.Auth)
+	if err != nil {
+		return e.InternalServerError("", err)
+	}
+	e.Response.Header().Set("Cache-Control", "public, max-age=30")
+	return e.JSON(http.StatusOK, summaries)
 }
 
 // getSystemdInfo handles GET /api/beszel/systemd/info requests

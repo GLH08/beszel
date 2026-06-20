@@ -6,6 +6,7 @@ import (
 
 	"github.com/henrygd/beszel/internal/alerts"
 	"github.com/henrygd/beszel/internal/entities/system"
+	"github.com/henrygd/beszel/internal/hub/utils"
 	"github.com/pocketbase/dbx"
 	"github.com/pocketbase/pocketbase/core"
 )
@@ -206,6 +207,57 @@ func (sys *System) notifyQuotaExceeded(systemRecord *core.Record, quotaGiB int, 
 			LinkText: "View system",
 		})
 	}
+}
+
+// TrafficSummariesForUser returns a map of systemId -> TrafficSummary for every
+// system the given user can see (honors SHARE_ALL_SYSTEMS). Used by the home
+// page's Monthly Traffic column via /api/beszel/traffic/all so the client can
+// fetch all summaries in one request instead of one per system.
+func (sm *SystemManager) TrafficSummariesForUser(app core.App, user *core.Record) (map[string]*TrafficSummary, error) {
+	hub := sm.hub
+	shareAll := false
+	if v, _ := utils.GetEnv("SHARE_ALL_SYSTEMS"); v == "true" {
+		shareAll = true
+	}
+	var systemIDs []string
+	if shareAll {
+		records, err := app.FindRecordsByFilter("systems", "", "", 0, 0, nil)
+		if err != nil {
+			return nil, err
+		}
+		for _, r := range records {
+			systemIDs = append(systemIDs, r.Id)
+		}
+	} else {
+		if user == nil {
+			return map[string]*TrafficSummary{}, nil
+		}
+		// Select the system ids whose users array contains this user (same approach
+		// as System.HasUser, avoiding PocketBase relation-filter syntax quirks).
+		rows, err := app.DB().Select("id").From("systems").Where(dbx.Like("users", user.Id).Match(true, true)).Rows()
+		if err != nil {
+			return nil, err
+		}
+		for rows.Next() {
+			var id string
+			if err := rows.Scan(&id); err != nil {
+				rows.Close()
+				return nil, err
+			}
+			systemIDs = append(systemIDs, id)
+		}
+		rows.Close()
+	}
+	out := make(map[string]*TrafficSummary, len(systemIDs))
+	for _, id := range systemIDs {
+		sys := &System{Id: id, manager: sm}
+		if summary, err := sys.TrafficSummary(); err == nil {
+			out[id] = summary
+		} else {
+			hub.Logger().Debug("traffic summary for system", "system", id, "err", err)
+		}
+	}
+	return out, nil
 }
 
 // TrafficSummary returns the current billing-cycle traffic snapshot for the system.
