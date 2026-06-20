@@ -29,11 +29,14 @@
 
 - **作用**:按系统配置流量配额(GiB)与重置日(1-28),累加上下行流量,周期重置,超额/接近超额时发告警。
 - **关键文件**:
-  - `internal/hub/systems/traffic.go` — 周期计算、逐网卡差分累加、80% 预警、超额告警、`TrafficSummary`。
+  - `internal/hub/systems/traffic.go` — 周期计算、逐网卡差分累加、80% 预警、超额告警、`TrafficSummary`、`TrafficSummariesForUser`(批量)。
+  - `internal/hub/api.go` — `GET /api/beszel/traffic`(单系统)、`GET /api/beszel/traffic/all`(批量,首页列用)。
   - `internal/migrations/1781654400_add_traffic_quota.go` — `systems` 加 `traffic_quota`/`traffic_reset_day` 字段;新建 `traffic_monthly` 集合。
-  - `internal/site/src/components/traffic-card/` — 流量卡片(30s 轮询累计 + 实时速率)。
+  - `internal/site/src/components/traffic-card/` — 系统详情页流量卡片(30s 轮询累计 + 实时速率)。
+  - `internal/site/src/components/systems-table/systems-table-columns.tsx` — **首页 Traffic 列**(迷你进度条,已用/配额,样式与 CPU/内存/磁盘列统一,80%/100% 变色)。
+  - `internal/site/src/lib/traffic-summaries.ts` — 首页批量流量摘要 nanostore(30s 轮询 `/traffic/all`)。
 - **数据源**:agent 的 `Stats.NetworkInterfaces`(每网卡累计字节)。
-- **测试**:`traffic_test.go`(`TestComputeNetDelta`、`TestShouldWarnQuota`)。
+- **测试**:`traffic_test.go`(`TestComputeNetDelta`、`TestShouldWarnQuota`)、`traffic_all_test.go`(`TestTrafficAllEndpoint`)。
 - **兼容性**:旧 agent 不上报 `NetworkInterfaces` 时不累加(卡片隐藏);字段均为追加。
 
 ### 3. Ping / Latency Monitors(延迟监测)
@@ -158,12 +161,13 @@
 
 ## 八、提交总览
 
-custom 分支相对 main 共 **53 个提交**(含设计文档与实现计划)。按批次:
+custom 分支相对 main 共 **56 个提交**(含设计文档与实现计划)。按批次:
 
 - 基础设施 + 三大功能:30 个(commit `a03f3aeb` ~ `fb84f2dc`)
 - P0 修复:3 个 + 文档(`851e4b2d` ~ `0166e4fb`)
 - P1 修复:4 个 + 文档(`be0ce42f` ~ `5c9c843a`)
 - P2 修复:3 个 + 文档(`d01475dc` ~ `df1bedd8`)
 - P3 修复:5 个 + 文档(`81baf2ca` ~ `4763c590`)
+- 首页 Monthly Traffic 列:2 个(`6376e26d` 批量接口 + `071b1b97` 前端列)
 
 设计文档与实现计划存放于 `docs/superpowers/specs/` 与 `docs/superpowers/plans/`。
