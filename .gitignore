@@ -26,3 +26,6 @@ dockerfile_agent_dev
 beszel_socket
 beszel_agent_data
 .env
+
+# Local-only ops memo (contains personal domain, never commit)
+docs/NGINX-SETUP.md
