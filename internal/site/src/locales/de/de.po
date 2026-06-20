@@ -1781,7 +1781,9 @@ msgstr "Gesamtzeit für Lese-/Schreibvorgänge (kann 100% überschreiten)"
 msgid "Total: {0}"
 msgstr "Gesamt: {0}"
 
+#. Monthly traffic column in systems table
 #: src/components/routes/system.tsx
+#: src/components/systems-table/systems-table-columns.tsx
 msgid "Traffic"
 msgstr ""
 

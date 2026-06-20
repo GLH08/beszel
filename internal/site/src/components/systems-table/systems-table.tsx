@@ -43,6 +43,7 @@ import { Input } from "@/components/ui/input"
 import { TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { SystemStatus } from "@/lib/enums"
 import { $downSystems, $pausedSystems, $systems, $upSystems } from "@/lib/stores"
+import { initTrafficSummaries } from "@/lib/traffic-summaries"
 import { cn, runOnce, useBrowserStorage } from "@/lib/utils"
 import type { SystemRecord } from "@/types"
 import AlertButton from "../alerts/alert-button"
@@ -63,6 +64,9 @@ export default function SystemsTable() {
 	const { i18n, t } = useLingui()
 	const [filter, setFilter] = useState<string>("")
 	const [statusFilter, setStatusFilter] = useState<StatusFilter>("all")
+
+	// start the monthly-traffic summary poller for the home column (idempotent)
+	useEffect(() => initTrafficSummaries(), [])
 	const [sorting, setSorting] = useBrowserStorage<SortingState>(
 		"sortMode",
 		[{ id: "system", desc: false }],

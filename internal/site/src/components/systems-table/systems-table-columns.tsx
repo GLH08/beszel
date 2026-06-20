@@ -11,6 +11,7 @@ import {
 	ClockArrowUp,
 	CopyIcon,
 	CpuIcon,
+	GaugeIcon,
 	HardDriveIcon,
 	MemoryStickIcon,
 	MoreHorizontalIcon,
@@ -27,6 +28,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip"
 import { isReadOnlyUser, pb } from "@/lib/api"
 import { BatteryState, ConnectionType, connectionTypeLabels, MeterState, SystemStatus } from "@/lib/enums"
 import { $longestSystemNameLen, $userSettings } from "@/lib/stores"
+import { $trafficSummaries } from "@/lib/traffic-summaries"
 import {
 	cn,
 	copyToClipboard,
@@ -257,6 +259,58 @@ export function SystemsTableColumns(viewMode: "table" | "grid"): ColumnDef<Syste
 					<span className="tabular-nums whitespace-nowrap">
 						{decimalString(value, value >= 100 ? 1 : 2)} {unit}
 					</span>
+				)
+			},
+		},
+		{
+			// Monthly traffic: mini progress bar (used / quota) for the current
+			// billing cycle. Data comes from the batch /api/beszel/traffic/all poll
+			// ($trafficSummaries). Unlimited (quota 0) systems show used only.
+			id: "monthlyTraffic",
+			name: () => t({ message: "Traffic", comment: "Monthly traffic column in systems table" }),
+			size: 50,
+			Icon: GaugeIcon,
+			header: sortableHeader,
+			hideSort: true,
+			sortUndefined: "last",
+			cell(info) {
+				const sys = info.row.original
+				const summaries = useStore($trafficSummaries)
+				const s = summaries[sys.id]
+				if (!s) return null
+				const used = s.bytes_up + s.bytes_down
+				const quotaBytes = s.quota_gib * 1024 * 1024 * 1024
+				const unlimited = s.quota_gib <= 0
+				// hide unlimited systems with no usage and no history
+				if (unlimited && used === 0 && !s.has_history) return null
+				const usedFmt = formatBytes(used)
+				if (unlimited) {
+					return (
+						<span className="tabular-nums whitespace-nowrap text-muted-foreground">
+							{decimalString(usedFmt.value, 1)} {usedFmt.unit}
+						</span>
+					)
+				}
+				const pct = Math.min(100, (used / quotaBytes) * 100)
+				// thresholds: 80% warn, 100% crit — matches the traffic-card
+				const threshold = getMeterStateByThresholds(pct, 80, 100)
+				const meterClass = cn(
+					"h-full",
+					(sys.status !== SystemStatus.Up && STATUS_COLORS.paused) ||
+						(threshold === MeterState.Good && STATUS_COLORS.up) ||
+						(threshold === MeterState.Warn && STATUS_COLORS.pending) ||
+						STATUS_COLORS.down
+				)
+				return (
+					<div className="flex gap-2 items-center tabular-nums tracking-tight w-full">
+						<span className="min-w-8 shrink-0">
+							{decimalString(usedFmt.value, 1)}
+							<span className="text-muted-foreground text-sm"> {usedFmt.unit}</span>
+						</span>
+						<span className="flex-1 min-w-8 grid bg-muted h-[1em] rounded-sm overflow-hidden">
+							<span className={meterClass} style={{ width: `${pct}%` }}></span>
+						</span>
+					</div>
 				)
 			},
 		},
