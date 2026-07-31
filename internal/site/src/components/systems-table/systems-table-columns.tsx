@@ -500,7 +500,7 @@ export function SystemsTableColumns(viewMode: "table" | "grid"): ColumnDef<Syste
 						</span>
 					)
 				}
-				const end = sys.expire_end
+				const end = sys.expire_end?.slice(0, 10)
 				if (!end) return null
 				const today = new Date()
 				today.setHours(0, 0, 0, 0)

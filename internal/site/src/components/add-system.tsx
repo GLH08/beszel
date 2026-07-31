@@ -272,11 +272,11 @@ export const SystemDialog = ({ setOpen, system }: { setOpen: (open: boolean) => 
 								<Label htmlFor="expire_start" className="xs:text-end">
 									<Trans>Start date</Trans>
 								</Label>
-								<Input id="expire_start" name="expire_start" type="date" defaultValue={system?.expire_start} />
+								<Input id="expire_start" name="expire_start" type="date" defaultValue={system?.expire_start?.slice(0, 10)} />
 								<Label htmlFor="expire_end" className="xs:text-end">
 									<Trans>End date</Trans>
 								</Label>
-								<Input id="expire_end" name="expire_end" type="date" defaultValue={system?.expire_end} />
+								<Input id="expire_end" name="expire_end" type="date" defaultValue={system?.expire_end?.slice(0, 10)} />
 								<Label htmlFor="renew_cycle" className="xs:text-end">
 									<Trans>Renew cycle</Trans>
 								</Label>
