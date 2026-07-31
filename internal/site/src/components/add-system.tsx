@@ -71,6 +71,7 @@ export const SystemDialog = ({ setOpen, system }: { setOpen: (open: boolean) => 
 	const isUnixSocket = hostValue.startsWith("/")
 	const [tab, setTab] = useBrowserStorage("as-tab", "docker")
 	const [token, setToken] = useState(system?.token ?? "")
+	const [expireType, setExpireType] = useState(system?.expire_type ?? "")
 
 	useEffect(() => {
 		;(async () => {
@@ -98,6 +99,14 @@ export const SystemDialog = ({ setOpen, system }: { setOpen: (open: boolean) => 
 		// coerce numeric fields (FormData returns strings)
 		data.traffic_quota = Number(data.traffic_quota) || 0
 		data.traffic_reset_day = Number(data.traffic_reset_day) || 1
+		// expire: clear date/cycle fields unless fixed; default cycle to month
+		if (data.expire_type !== "fixed") {
+			data.expire_start = ""
+			data.expire_end = ""
+			data.renew_cycle = ""
+		} else if (!data.renew_cycle) {
+			data.renew_cycle = "month"
+		}
 		data.users = pb.authStore.record!.id
 		try {
 			setOpen(false)
@@ -238,6 +247,54 @@ export const SystemDialog = ({ setOpen, system }: { setOpen: (open: boolean) => 
 							step={1}
 							defaultValue={system?.traffic_reset_day ?? 1}
 						/>
+						<Label htmlFor="expire_type" className="xs:text-end">
+							<Trans>Expiry</Trans>
+						</Label>
+						<select
+							id="expire_type"
+							name="expire_type"
+							value={expireType}
+							onChange={(e) => setExpireType(e.target.value)}
+							className="bg-transparent border border-input rounded-md h-9 px-2 text-sm"
+						>
+							<option value="">
+								<Trans>None</Trans>
+							</option>
+							<option value="permanent">
+								<Trans>Permanent</Trans>
+							</option>
+							<option value="fixed">
+								<Trans>Fixed expiry</Trans>
+							</option>
+						</select>
+						{expireType === "fixed" && (
+							<>
+								<Label htmlFor="expire_start" className="xs:text-end">
+									<Trans>Start date</Trans>
+								</Label>
+								<Input id="expire_start" name="expire_start" type="date" defaultValue={system?.expire_start} />
+								<Label htmlFor="expire_end" className="xs:text-end">
+									<Trans>End date</Trans>
+								</Label>
+								<Input id="expire_end" name="expire_end" type="date" defaultValue={system?.expire_end} />
+								<Label htmlFor="renew_cycle" className="xs:text-end">
+									<Trans>Renew cycle</Trans>
+								</Label>
+								<select
+									id="renew_cycle"
+									name="renew_cycle"
+									defaultValue={system?.renew_cycle ?? "month"}
+									className="bg-transparent border border-input rounded-md h-9 px-2 text-sm"
+								>
+									<option value="month">
+										<Trans>Month</Trans>
+									</option>
+									<option value="year">
+										<Trans>Year</Trans>
+									</option>
+								</select>
+							</>
+						)}
 					</div>
 					<DialogFooter className="flex justify-end gap-x-2 gap-y-3 flex-col mt-5">
 						{/* Docker */}
