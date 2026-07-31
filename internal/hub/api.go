@@ -130,6 +130,8 @@ func (h *Hub) registerApiRoutes(se *core.ServeEvent) error {
 	// get monthly traffic summary for a system
 	apiAuth.GET("/traffic", h.getTraffic)
 	apiAuth.GET("/traffic/all", h.getTrafficAll)
+	// renew a system's expiry date by one cycle
+	apiAuth.POST("/systems/renew", h.renewSystem).BindFunc(excludeReadOnlyRole)
 	// /containers routes
 	if enabled, _ := utils.GetEnv("CONTAINER_DETAILS"); enabled != "false" {
 		// get container logs
@@ -423,4 +425,22 @@ func (h *Hub) refreshSmartData(e *core.RequestEvent) error {
 	}
 
 	return e.JSON(http.StatusOK, map[string]string{"status": "ok"})
+}
+
+// renewSystem handles POST /api/beszel/systems/renew?system=<id>
+// Advances the system's expire_end by one renewal cycle (month or year).
+func (h *Hub) renewSystem(e *core.RequestEvent) error {
+	systemID := e.Request.URL.Query().Get("system")
+	if systemID == "" {
+		return e.BadRequestError("Invalid system parameter", nil)
+	}
+	sys, err := h.sm.GetSystem(systemID)
+	if err != nil || !sys.HasUser(e.App, e.Auth) {
+		return e.NotFoundError("", nil)
+	}
+	newEnd, err := sys.Renew()
+	if err != nil {
+		return e.BadRequestError(err.Error(), nil)
+	}
+	return e.JSON(http.StatusOK, map[string]string{"expire_end": newEnd.Format("2006-01-02")})
 }
