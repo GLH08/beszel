@@ -36,6 +36,14 @@ export interface SystemRecord extends RecordModel {
 	updated: string
 	traffic_quota?: number
 	traffic_reset_day?: number
+	/** expiry type: empty = not set, permanent = no expiry, fixed = has end date */
+	expire_type?: "" | "permanent" | "fixed"
+	/** start date YYYY-MM-DD (fixed only) */
+	expire_start?: string
+	/** end date YYYY-MM-DD (fixed only) */
+	expire_end?: string
+	/** renewal cycle (fixed only); UI defaults to month */
+	renew_cycle?: "month" | "year"
 }
 
 export interface SystemInfo {
