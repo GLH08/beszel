@@ -24,6 +24,11 @@ msgctxt "New version available"
 msgid "{0} available"
 msgstr "{0} mevcut"
 
+#. placeholder {0}: -days
+#: src/components/systems-table/systems-table-columns.tsx
+msgid "{0} days ago"
+msgstr ""
+
 #. placeholder {0}: table.getFilteredSelectedRowModel().rows.length
 #. placeholder {1}: table.getFilteredRowModel().rows.length
 #: src/components/routes/settings/alerts-history-data-table.tsx
@@ -45,6 +50,12 @@ msgstr "{count, plural, one {{countString} saat} other {{countString} saat}}"
 #: src/lib/utils.ts
 msgid "{count, plural, one {{countString} minute} few {{countString} minutes} many {{countString} minutes} other {{countString} minutes}}"
 msgstr "{count, plural, one {{countString} dakika} few {{countString} dakika} many {{countString} dakika} other {{countString} dakika}}"
+
+#: src/components/systems-table/systems-table-columns.tsx
+#: src/components/systems-table/systems-table-columns.tsx
+#: src/components/systems-table/systems-table-columns.tsx
+msgid "{days} days left"
+msgstr ""
 
 #: src/components/routes/system/info-bar.tsx
 msgid "{threads, plural, one {# thread} other {# threads}}"
@@ -709,6 +720,10 @@ msgstr "Boş"
 msgid "Enabled"
 msgstr ""
 
+#: src/components/add-system.tsx
+msgid "End date"
+msgstr ""
+
 #: src/components/routes/settings/quiet-hours.tsx
 #: src/components/routes/settings/quiet-hours.tsx
 msgid "End Time"
@@ -778,6 +793,12 @@ msgstr "Aktif olarak çıktı"
 msgid "Expires after one hour or on hub restart."
 msgstr "Bir saat sonra veya hub yeniden başlatıldığında sona erer."
 
+#. Server expiry column in systems table
+#: src/components/add-system.tsx
+#: src/components/systems-table/systems-table-columns.tsx
+msgid "Expiry"
+msgstr ""
+
 #: src/components/routes/settings/alerts-history-data-table.tsx
 msgid "Export"
 msgstr "Dışa aktar"
@@ -845,6 +866,10 @@ msgstr "Parmak izi"
 #: src/components/routes/system/smart-table.tsx
 msgid "Firmware"
 msgstr "Donanım Yazılımı"
+
+#: src/components/add-system.tsx
+msgid "Fixed expiry"
+msgstr ""
 
 #: src/components/alerts/alerts-sheet.tsx
 msgid "For <0>{min}</0> {min, plural, one {minute} other {minutes}}"
@@ -1053,6 +1078,11 @@ msgstr "Giriş denemesi başarısız"
 msgid "Logs"
 msgstr "Günlükler"
 
+#: src/components/add-system.tsx
+#: src/components/systems-table/systems-table-columns.tsx
+msgid "Long-term"
+msgstr ""
+
 #: src/components/routes/settings/notifications.tsx
 msgid "Looking instead for where to create alerts? Click the bell <0/> icons in the systems table."
 msgstr "Uyarı oluşturma yerini mi arıyorsunuz? Sistemler tablosundaki zil <0/> simgelerine tıklayın."
@@ -1109,6 +1139,10 @@ msgstr "Docker konteynerlerinin bellek kullanımı"
 #. Device model
 #: src/components/routes/system/smart-table.tsx
 msgid "Model"
+msgstr ""
+
+#: src/components/add-system.tsx
+msgid "Month"
 msgstr ""
 
 #: src/components/traffic-card/traffic-card.tsx
@@ -1182,6 +1216,10 @@ msgstr "Bu cihaz için kullanılabilir S.M.A.R.T. özelliği yok."
 #: src/components/systems-table/systems-table.tsx
 msgid "No systems found."
 msgstr "Sistem bulunamadı."
+
+#: src/components/add-system.tsx
+msgid "None"
+msgstr ""
 
 #: src/components/command-palette.tsx
 #: src/components/routes/settings/layout.tsx
@@ -1415,6 +1453,14 @@ msgstr "Yenile"
 msgid "Relationships"
 msgstr "İlişkiler"
 
+#: src/components/systems-table/systems-table-columns.tsx
+msgid "Renew"
+msgstr ""
+
+#: src/components/add-system.tsx
+msgid "Renew cycle"
+msgstr ""
+
 #: src/components/login/login.tsx
 msgid "Request a one-time password"
 msgstr "Tek kullanımlık şifre iste"
@@ -1585,6 +1631,10 @@ msgstr "SMTP ayarları"
 #: src/components/systems-table/systems-table.tsx
 msgid "Sort By"
 msgstr "Sıralama Ölçütü"
+
+#: src/components/add-system.tsx
+msgid "Start date"
+msgstr ""
 
 #: src/components/routes/settings/quiet-hours.tsx
 #: src/components/routes/settings/quiet-hours.tsx
@@ -2019,6 +2069,10 @@ msgstr "YAML Yapılandırması"
 #: src/components/routes/settings/config-yaml.tsx
 msgid "YAML Configuration"
 msgstr "YAML Yapılandırması"
+
+#: src/components/add-system.tsx
+msgid "Year"
+msgstr ""
 
 #: src/components/systemd-table/systemd-table.tsx
 #: src/components/systemd-table/systemd-table.tsx

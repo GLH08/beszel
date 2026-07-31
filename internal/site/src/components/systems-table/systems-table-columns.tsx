@@ -496,7 +496,7 @@ export function SystemsTableColumns(viewMode: "table" | "grid"): ColumnDef<Syste
 				if (type === "permanent") {
 					return (
 						<span className="text-muted-foreground text-xs whitespace-nowrap">
-							<Trans>Permanent</Trans>
+							<Trans>Long-term</Trans>
 						</span>
 					)
 				}

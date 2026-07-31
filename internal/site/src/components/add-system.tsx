@@ -261,7 +261,7 @@ export const SystemDialog = ({ setOpen, system }: { setOpen: (open: boolean) => 
 								<Trans>None</Trans>
 							</option>
 							<option value="permanent">
-								<Trans>Permanent</Trans>
+								<Trans>Long-term</Trans>
 							</option>
 							<option value="fixed">
 								<Trans>Fixed expiry</Trans>

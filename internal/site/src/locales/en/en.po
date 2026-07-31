@@ -19,6 +19,11 @@ msgctxt "New version available"
 msgid "{0} available"
 msgstr "{0} available"
 
+#. placeholder {0}: -days
+#: src/components/systems-table/systems-table-columns.tsx
+msgid "{0} days ago"
+msgstr "{0} days ago"
+
 #. placeholder {0}: table.getFilteredSelectedRowModel().rows.length
 #. placeholder {1}: table.getFilteredRowModel().rows.length
 #: src/components/routes/settings/alerts-history-data-table.tsx
@@ -40,6 +45,12 @@ msgstr "{count, plural, one {{countString} hour} other {{countString} hours}}"
 #: src/lib/utils.ts
 msgid "{count, plural, one {{countString} minute} few {{countString} minutes} many {{countString} minutes} other {{countString} minutes}}"
 msgstr "{count, plural, one {{countString} minute} few {{countString} minutes} many {{countString} minutes} other {{countString} minutes}}"
+
+#: src/components/systems-table/systems-table-columns.tsx
+#: src/components/systems-table/systems-table-columns.tsx
+#: src/components/systems-table/systems-table-columns.tsx
+msgid "{days} days left"
+msgstr "{days} days left"
 
 #: src/components/routes/system/info-bar.tsx
 msgid "{threads, plural, one {# thread} other {# threads}}"
@@ -704,6 +715,10 @@ msgstr "Empty"
 msgid "Enabled"
 msgstr "Enabled"
 
+#: src/components/add-system.tsx
+msgid "End date"
+msgstr "End date"
+
 #: src/components/routes/settings/quiet-hours.tsx
 #: src/components/routes/settings/quiet-hours.tsx
 msgid "End Time"
@@ -773,6 +788,12 @@ msgstr "Exited active"
 msgid "Expires after one hour or on hub restart."
 msgstr "Expires after one hour or on hub restart."
 
+#. Server expiry column in systems table
+#: src/components/add-system.tsx
+#: src/components/systems-table/systems-table-columns.tsx
+msgid "Expiry"
+msgstr "Expiry"
+
 #: src/components/routes/settings/alerts-history-data-table.tsx
 msgid "Export"
 msgstr "Export"
@@ -840,6 +861,10 @@ msgstr "Fingerprint"
 #: src/components/routes/system/smart-table.tsx
 msgid "Firmware"
 msgstr "Firmware"
+
+#: src/components/add-system.tsx
+msgid "Fixed expiry"
+msgstr "Fixed expiry"
 
 #: src/components/alerts/alerts-sheet.tsx
 msgid "For <0>{min}</0> {min, plural, one {minute} other {minutes}}"
@@ -1048,6 +1073,11 @@ msgstr "Login attempt failed"
 msgid "Logs"
 msgstr "Logs"
 
+#: src/components/add-system.tsx
+#: src/components/systems-table/systems-table-columns.tsx
+msgid "Long-term"
+msgstr "Long-term"
+
 #: src/components/routes/settings/notifications.tsx
 msgid "Looking instead for where to create alerts? Click the bell <0/> icons in the systems table."
 msgstr "Looking instead for where to create alerts? Click the bell <0/> icons in the systems table."
@@ -1105,6 +1135,10 @@ msgstr "Memory usage of docker containers"
 #: src/components/routes/system/smart-table.tsx
 msgid "Model"
 msgstr "Model"
+
+#: src/components/add-system.tsx
+msgid "Month"
+msgstr "Month"
 
 #: src/components/traffic-card/traffic-card.tsx
 msgid "Monthly Traffic"
@@ -1177,6 +1211,10 @@ msgstr "No S.M.A.R.T. attributes available for this device."
 #: src/components/systems-table/systems-table.tsx
 msgid "No systems found."
 msgstr "No systems found."
+
+#: src/components/add-system.tsx
+msgid "None"
+msgstr "None"
 
 #: src/components/command-palette.tsx
 #: src/components/routes/settings/layout.tsx
@@ -1410,6 +1448,14 @@ msgstr "Refresh"
 msgid "Relationships"
 msgstr "Relationships"
 
+#: src/components/systems-table/systems-table-columns.tsx
+msgid "Renew"
+msgstr "Renew"
+
+#: src/components/add-system.tsx
+msgid "Renew cycle"
+msgstr "Renew cycle"
+
 #: src/components/login/login.tsx
 msgid "Request a one-time password"
 msgstr "Request a one-time password"
@@ -1580,6 +1626,10 @@ msgstr "SMTP settings"
 #: src/components/systems-table/systems-table.tsx
 msgid "Sort By"
 msgstr "Sort By"
+
+#: src/components/add-system.tsx
+msgid "Start date"
+msgstr "Start date"
 
 #: src/components/routes/settings/quiet-hours.tsx
 #: src/components/routes/settings/quiet-hours.tsx
@@ -2014,6 +2064,10 @@ msgstr "YAML Config"
 #: src/components/routes/settings/config-yaml.tsx
 msgid "YAML Configuration"
 msgstr "YAML Configuration"
+
+#: src/components/add-system.tsx
+msgid "Year"
+msgstr "Year"
 
 #: src/components/systemd-table/systemd-table.tsx
 #: src/components/systemd-table/systemd-table.tsx

@@ -24,6 +24,11 @@ msgctxt "New version available"
 msgid "{0} available"
 msgstr "{0} dostupno"
 
+#. placeholder {0}: -days
+#: src/components/systems-table/systems-table-columns.tsx
+msgid "{0} days ago"
+msgstr ""
+
 #. placeholder {0}: table.getFilteredSelectedRowModel().rows.length
 #. placeholder {1}: table.getFilteredRowModel().rows.length
 #: src/components/routes/settings/alerts-history-data-table.tsx
@@ -45,6 +50,12 @@ msgstr "{count, plural, one {{countString} sat} other {{countString} sati}}"
 #: src/lib/utils.ts
 msgid "{count, plural, one {{countString} minute} few {{countString} minutes} many {{countString} minutes} other {{countString} minutes}}"
 msgstr "{count, plural, one {{countString} minuta} few {{countString} minuta} many {{countString} minuta} other {{countString} minute}}"
+
+#: src/components/systems-table/systems-table-columns.tsx
+#: src/components/systems-table/systems-table-columns.tsx
+#: src/components/systems-table/systems-table-columns.tsx
+msgid "{days} days left"
+msgstr ""
 
 #: src/components/routes/system/info-bar.tsx
 msgid "{threads, plural, one {# thread} other {# threads}}"
@@ -709,6 +720,10 @@ msgstr "Prazno"
 msgid "Enabled"
 msgstr ""
 
+#: src/components/add-system.tsx
+msgid "End date"
+msgstr ""
+
 #: src/components/routes/settings/quiet-hours.tsx
 #: src/components/routes/settings/quiet-hours.tsx
 msgid "End Time"
@@ -778,6 +793,12 @@ msgstr "Izašlo aktivno"
 msgid "Expires after one hour or on hub restart."
 msgstr "Istječe nakon jednog sata ili ponovnog pokretanja huba."
 
+#. Server expiry column in systems table
+#: src/components/add-system.tsx
+#: src/components/systems-table/systems-table-columns.tsx
+msgid "Expiry"
+msgstr ""
+
 #: src/components/routes/settings/alerts-history-data-table.tsx
 msgid "Export"
 msgstr "Izvoz"
@@ -845,6 +866,10 @@ msgstr "Otisak"
 #: src/components/routes/system/smart-table.tsx
 msgid "Firmware"
 msgstr "Firmver"
+
+#: src/components/add-system.tsx
+msgid "Fixed expiry"
+msgstr ""
 
 #: src/components/alerts/alerts-sheet.tsx
 msgid "For <0>{min}</0> {min, plural, one {minute} other {minutes}}"
@@ -1053,6 +1078,11 @@ msgstr "Neuspješno pokušaj prijave"
 msgid "Logs"
 msgstr "Zapisi"
 
+#: src/components/add-system.tsx
+#: src/components/systems-table/systems-table-columns.tsx
+msgid "Long-term"
+msgstr ""
+
 #: src/components/routes/settings/notifications.tsx
 msgid "Looking instead for where to create alerts? Click the bell <0/> icons in the systems table."
 msgstr "Tražite gdje stvoriti upozorenja? Kliknite ikonu zvona <0/> u tablici sustava."
@@ -1109,6 +1139,10 @@ msgstr "Iskorištenost memorije Docker spremnika"
 #. Device model
 #: src/components/routes/system/smart-table.tsx
 msgid "Model"
+msgstr ""
+
+#: src/components/add-system.tsx
+msgid "Month"
 msgstr ""
 
 #: src/components/traffic-card/traffic-card.tsx
@@ -1182,6 +1216,10 @@ msgstr "Nema dostupnih S.M.A.R.T. atributa za ovaj uređaj."
 #: src/components/systems-table/systems-table.tsx
 msgid "No systems found."
 msgstr "Nije pronađen nijedan sustav."
+
+#: src/components/add-system.tsx
+msgid "None"
+msgstr ""
 
 #: src/components/command-palette.tsx
 #: src/components/routes/settings/layout.tsx
@@ -1415,6 +1453,14 @@ msgstr "Osvježi"
 msgid "Relationships"
 msgstr "Odnosi"
 
+#: src/components/systems-table/systems-table-columns.tsx
+msgid "Renew"
+msgstr ""
+
+#: src/components/add-system.tsx
+msgid "Renew cycle"
+msgstr ""
+
 #: src/components/login/login.tsx
 msgid "Request a one-time password"
 msgstr "Zatraži jednokratnu lozinku"
@@ -1585,6 +1631,10 @@ msgstr "SMTP postavke"
 #: src/components/systems-table/systems-table.tsx
 msgid "Sort By"
 msgstr "Sortiraj po"
+
+#: src/components/add-system.tsx
+msgid "Start date"
+msgstr ""
 
 #: src/components/routes/settings/quiet-hours.tsx
 #: src/components/routes/settings/quiet-hours.tsx
@@ -2019,6 +2069,10 @@ msgstr "YAML konfiguracija"
 #: src/components/routes/settings/config-yaml.tsx
 msgid "YAML Configuration"
 msgstr "YAML Konfiguracija"
+
+#: src/components/add-system.tsx
+msgid "Year"
+msgstr ""
 
 #: src/components/systemd-table/systemd-table.tsx
 #: src/components/systemd-table/systemd-table.tsx
