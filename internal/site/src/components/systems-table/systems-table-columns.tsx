@@ -22,6 +22,7 @@ import {
 	TerminalSquareIcon,
 	Trash2Icon,
 	WifiIcon,
+	CalendarClock,
 } from "lucide-react"
 import { memo, useMemo, useRef, useState } from "react"
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip"
@@ -480,6 +481,58 @@ export function SystemsTableColumns(viewMode: "table" | "grid"): ColumnDef<Syste
 			},
 		},
 		{
+			id: "expiry",
+			accessorFn: ({ expire_end }) => expire_end || undefined,
+			name: () => t({ message: "Expiry", comment: "Server expiry column in systems table" }),
+			size: 60,
+			Icon: CalendarClock,
+			header: sortableHeader,
+			hideSort: true,
+			sortUndefined: "last",
+			cell(info) {
+				const sys = info.row.original
+				const type = sys.expire_type
+				if (!type) return null
+				if (type === "permanent") {
+					return (
+						<span className="text-muted-foreground text-xs whitespace-nowrap">
+							<Trans>Permanent</Trans>
+						</span>
+					)
+				}
+				const end = sys.expire_end
+				if (!end) return null
+				const today = new Date()
+				today.setHours(0, 0, 0, 0)
+				const endDate = new Date(`${end}T00:00:00`)
+				const days = Math.ceil((endDate.getTime() - today.getTime()) / 86_400_000)
+				let color = ""
+				let label = ""
+				if (days < 0) {
+					color = "text-red-500"
+					label = t`${-days} days ago`
+				} else if (days <= 7) {
+					color = "text-red-500"
+					label = t`${days} days left`
+				} else if (days <= 30) {
+					color = "text-yellow-500"
+					label = t`${days} days left`
+				} else {
+					label = t`${days} days left`
+				}
+				const showRenew = days <= 7
+				return (
+					<div className="flex items-center gap-1 tabular-nums whitespace-nowrap">
+						<span className="flex flex-col leading-tight">
+							<span className={color}>{end}</span>
+							<span className={cn("text-xs", color || "text-muted-foreground")}>{label}</span>
+						</span>
+						{showRenew && <RenewButton systemId={sys.id} />}
+					</div>
+				)
+			},
+		},
+		{
 			id: "actions",
 			// @ts-expect-error
 			name: () => t({ message: "Actions", comment: "Table column" }),
@@ -736,4 +789,36 @@ export const ActionsButton = memo(({ system }: { system: SystemRecord }) => {
 			</>
 		)
 	}, [id, status, host, name, system, t, deleteOpen, editOpen])
+})
+
+/** Small inline button shown in the expiry column when a system is within the
+ * renew window (<= 7 days) or already expired. POSTs to /systems/renew; the
+ * realtime subscription updates the record, so no manual store mutation. */
+export const RenewButton = memo(({ systemId }: { systemId: string }) => {
+	const [loading, setLoading] = useState(false)
+	return (
+		<Button
+			variant="outline"
+			size="sm"
+			className="h-6 px-2 py-0 text-xs relative z-10"
+			disabled={loading}
+			onClick={async (e) => {
+				e.preventDefault()
+				e.stopPropagation()
+				setLoading(true)
+				try {
+					await pb.send("/api/beszel/systems/renew", {
+						method: "POST",
+						params: { system: systemId },
+					})
+				} catch (err) {
+					console.error("Renew failed:", err)
+				} finally {
+					setLoading(false)
+				}
+			}}
+		>
+			<Trans>Renew</Trans>
+		</Button>
+	)
 })
